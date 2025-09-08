@@ -1,745 +1,404 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI & Google Workspace para o Imobiliário</title>
+    <title>Your AI Co-pilot for Real Estate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Poppins:wght@400;500;700&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet"/>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chosen Palette: Google Inspired - Blue, Red, Yellow, Green -->
-    <!-- Application Structure Plan: The SPA is a tool-focused guide. The structure prioritizes the most advanced and powerful feature, Gem creation, at the top to highlight its value immediately. This is followed by core productivity and creative AI sections, creating a logical flow from custom tools to everyday use. Each tool/topic is presented in a collapsible card for clean, on-demand information, serving as a live presentation tool and a post-presentation reference guide. The improved design uses enhanced spacing, a refined color palette, and subtle interactive cues to guide the user through the content more intuitively. A new, hidden section is added at the end for an in-depth, bilingual prompt engineering guide, accessible via a button. The content is no longer duplicated. Instead, a single HTML structure is used, and a JavaScript object handles dynamic text translation, improving performance and maintainability. -->
-    <!-- Visualization & Content Choices: Report Info: Presentation topics (Gemini AI, Image Gen, Gemini, Gems) for real estate professionals. -> Goal: Inform & Empower. -> Viz/Presentation: Use an intuitive, step-by-step text format within collapsible cards for each scenario. A fixed navigation menu allows for quick access. The company logo is used for branding. -> Interaction: Clicking on a card expands it to reveal the scenario details, including ready-to-use prompts. Navigation links scroll the user smoothly to the corresponding section. A new button reveals a full-page, bilingual guide. The language selector now controls all page content. Confirmed NO SVG/Mermaid. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
     <style>
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8f9fa;
-            color: #2D3748;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f2f5;
+            color: #3c4043;
+            line-height: 1.6;
         }
-        .section-header {
+        .presentation-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+        }
+        .slide-container {
+            width: 100%;
+            max-width: 1280px;
+            min-height: 720px;
+            padding: 2.5rem;
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border-radius: 1rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
             position: relative;
         }
-        .google-color-bar {
-            height: 4px;
-            width: 100px;
-            margin-bottom: 24px;
+        @media (max-width: 1280px) {
+            .slide-container {
+                width: 90%;
+            }
         }
-        .blue-bg { background-color: #4285F4; }
-        .red-bg { background-color: #DB4437; }
-        .yellow-bg { background-color: #F4B400; }
-        .green-bg { background-color: #0F9D58; }
-        .card-container {
-            transition: all 0.3s ease-in-out;
-            border-bottom: 1px solid #e5e7eb;
+        @media (max-width: 768px) {
+            .slide-container {
+                min-height: auto;
+                padding: 1.5rem;
+            }
         }
-        .card-container:last-child {
-            border-bottom: none;
+        .title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #202124;
         }
-        .card-header {
-            cursor: pointer;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        .subtitle {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 400;
+            color: #5f6368;
         }
-        .card-header:hover {
-            background-color: #F7FAFC;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        .section-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            color: #202124;
         }
-        .card-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease-in-out;
+        .section-subtitle {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: #5f6368;
         }
-        .card-content.is-expanded {
-            max-height: 4000px;
-        }
-        .arrow-icon {
-            transition: transform 0.3s ease;
-        }
-        .is-expanded .arrow-icon {
-            transform: rotate(180deg);
-        }
-        .fixed-nav {
-            transform: translateY(0);
-            transition: transform 0.3s ease;
-        }
-        .fixed-nav.hidden {
-            transform: translateY(-100%);
-        }
-        .prompt-guide-container {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .prompt-guide-container.is-expanded {
-            max-height: 4000px;
-        }
-        .prompt-title-underline {
-            content: '';
-            display: block;
-            width: 50px;
-            height: 4px;
-            background-color: #4285F4;
-            margin-top: 8px;
-            margin-bottom: 24px;
-            border-radius: 2px;
-        }
-        .extra-tool-card {
-            background-color: white;
+        .blue-bar { background-color: #4285F4; }
+        .red-bar { background-color: #DB4437; }
+        .yellow-bar { background-color: #F4B400; }
+        .green-bar { background-color: #0F9D58; }
+        .icon-box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 80px;
+            height: 80px;
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .extra-tool-card:hover {
-            transform: translateY(-5px);
+        .icon-box:hover {
+            transform: translateY(-5px) scale(1.1);
             box-shadow: 0 6px 16px rgba(0,0,0,0.15);
         }
-        .spin {
-            animation: spin 1s linear infinite;
+        .icon-box i {
+            font-size: 2.25rem;
         }
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        .icon-box-sm {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+        }
+        .icon-box-sm i {
+            font-size: 1.5rem;
+        }
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+        @media (min-width: 768px) {
+            .content-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
-<body class="antialiased">
+<body>
 
-    <nav id="main-nav" class="fixed-nav hidden bg-white shadow-lg sticky top-0 z-50">
-        <div class="container mx-auto px-6 py-3 flex items-center justify-between">
-            <a href="#intro" class="font-bold text-gray-800 text-sm md:text-md"><img src="https://i.imgur.com/qBGE6YT.jpg" alt="Company Logo" class="h-8"></a>
-            <div class="flex-grow flex justify-end space-x-4">
-                <a href="#ai-studio" class="text-sm md:text-md font-medium text-gray-600 hover:text-gray-900 transition-colors duration-300" data-lang-key="nav.custom_tools">Ferramentas Personalizadas</a>
-                <a href="#core-tools" class="text-sm md:text-md font-medium text-gray-600 hover:text-gray-900 transition-colors duration-300" data-lang-key="nav.productivity">Produtividade</a>
-                <a href="#calendar" class="text-sm md:text-md font-medium text-gray-600 hover:text-gray-900 transition-colors duration-300" data-lang-key="nav.calendar">Calendário</a>
-                <a href="#drive-tasks" class="text-sm md:text-md font-medium text-gray-600 hover:text-gray-900 transition-colors duration-300" data-lang-key="nav.workflow">Fluxo de Trabalho</a>
-                <a href="#notebooklm" class="text-sm md:text-md font-medium text-gray-600 hover:text-gray-900 transition-colors duration-300" data-lang-key="nav.research">Pesquisa</a>
-                <a href="#creative-ai" class="text-sm md:text-md font-medium text-gray-600 hover:text-gray-900 transition-colors duration-300" data-lang-key="nav.creativity">Criatividade</a>
-                <a href="#nanobanana" class="text-sm md:text-md font-medium text-gray-600 hover:text-gray-900 transition-colors duration-300" data-lang-key="nav.go_bananas">Go Bananas</a>
+    <div class="presentation-container">
+
+        <!-- Slide 1: Cover -->
+        <div id="slide1" class="slide-container text-center justify-center">
+            <div class="space-y-8">
+                <div class="flex justify-center space-x-2">
+                    <div class="w-40 h-1.5 blue-bar"></div>
+                    <div class="w-40 h-1.5 red-bar"></div>
+                    <div class="w-40 h-1.5 yellow-bar"></div>
+                    <div class="w-40 h-1.5 green-bar"></div>
+                </div>
+                <h1 class="title text-4xl sm:text-5xl lg:text-6xl">Your AI Co-pilot for Real Estate</h1>
+                <p class="subtitle text-base sm:text-lg lg:text-xl max-w-3xl mx-auto">Get ready for an exclusive live demonstration on how to use Google's most powerful AI tools to revolutionize your business. From personalized client communications to stunning property visuals, we'll show you how to work smarter, not harder.</p>
+                <div class="flex justify-center flex-wrap gap-8 sm:gap-12 lg:gap-20 mt-12">
+                    <div class="flex flex-col items-center">
+                        <div class="icon-box ai-icon bg-blue-100 text-blue-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-brain text-4xl"></i></div>
+                        <span class="mt-4 text-sm sm:text-base font-medium">AI Assistant</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="icon-box property-icon bg-green-100 text-green-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-home text-4xl"></i></div>
+                        <span class="mt-4 text-sm sm:text-base font-medium">Real Estate</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="icon-box docs-icon bg-red-100 text-red-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-file-alt text-4xl"></i></div>
+                        <span class="mt-4 text-sm sm:text-base font-medium">Smart Documents</span>
+                    </div>
+                </div>
             </div>
-        </div>
-    </nav>
-
-    <header id="intro" class="bg-white shadow-md py-16 md:py-24 text-center">
-        <div class="container mx-auto px-6">
-            <div class="flex justify-center mb-4 space-x-2">
-                <div class="google-color-bar blue-bg"></div>
-                <div class="google-color-bar red-bg"></div>
-                <div class="google-color-bar yellow-bg"></div>
-                <div class="google-color-bar green-bg"></div>
-            </div>
-            <img src="https://i.imgur.com/qBGE6YT.jpg" alt="Company Logo" class="h-24 md:h-32 mx-auto mb-6">
-            <h1 id="intro-title" class="text-4xl md:text-5xl font-extrabold text-gray-800 leading-tight" data-lang-key="intro.title">O Seu Co-piloto de IA para o Imobiliário</h1>
-            <p id="intro-subtitle" class="mt-4 md:mt-6 text-lg md:text-xl text-gray-600 max-w-2xl mx-auto" data-lang-key="intro.subtitle">Descubra como usar as ferramentas de IA mais poderosas da Google para elevar o seu negócio, desde a redação de e-mails à geração de visuais de imóveis deslumbrantes.</p>
-        </div>
-    </header>
-
-    <main class="container mx-auto px-6 py-8 md:py-16">
-        <div class="flex justify-center space-x-4 mb-8">
-            <button id="pres-lang-pt" class="px-6 py-2 rounded-full font-semibold text-sm border-2 border-blue-500 text-blue-700 bg-white hover:bg-blue-50 transition-colors duration-200">Português</button>
-            <button id="pres-lang-en" class="px-6 py-2 rounded-full font-semibold text-sm border-2 border-gray-300 bg-white hover:bg-gray-100 transition-colors duration-200">English</button>
+            <div class="absolute bottom-5 right-8 text-sm text-gray-500">September 5, 2025</div>
         </div>
 
-        <section id="ai-studio" class="mb-12">
-            <div class="flex items-center mb-4">
-                <div class="google-color-bar blue-bg"></div>
-                <div class="google-color-bar red-bg"></div>
-                <div class="google-color-bar yellow-bg"></div>
-                <div class="google-color-bar green-bg"></div>
-            </div>
-            <h2 id="section-1-title" class="text-2xl md:text-3xl font-bold text-gray-800 mb-8 pb-2" data-lang-key="sections.section_1.title">1. O Poder dos Gems: Os Seus Agentes de IA Personalizados</h2>
-            <p id="section-1-subtitle" class="text-gray-600 mb-8" data-lang-key="sections.section_1.subtitle">Gems são assistentes de IA especializados que pode criar e treinar para executar tarefas específicas e repetitivas. No mercado imobiliário, isto significa ter um especialista pessoal para copywriting, documentos legais ou qualquer outra necessidade da sua equipa. É aqui que a IA deixa de ser uma ferramenta genérica para se tornar um recurso personalizado e exclusivo para o seu negócio.</p>
-
-            <div class="space-y-6">
-                <div class="card-container bg-white rounded-xl shadow-sm overflow-hidden">
-                    <div class="card-header p-6 flex items-center justify-between">
-                        <div class="flex items-center space-x-4">
-                            <span class="text-2xl">💡</span>
-                            <h3 id="gem-1-title" class="font-semibold text-lg md:text-xl text-gray-800" data-lang-key="sections.gem_1.title">Conheça o PortuPrompt Pro v2.0: O Seu Especialista em Prompt Engineering</h3>
-                        </div>
-                        <span class="arrow-icon text-gray-500">▼</span>
-                    </div>
-                    <div class="card-content p-6">
-                        <p id="gem-1-desc" class="text-gray-600 mb-4" data-lang-key="sections.gem_1.desc">"PortuPrompt Pro v2.0" é um assistente de IA de classe mundial especializado no mercado imobiliário português. A sua missão principal é pegar nas suas solicitações simples e instantaneamente convertê-las em prompts C.R.A.F.T. detalhados, estruturados e prontos a usar, executando-os de seguida para mostrar o resultado esperado.</p>
-                        
-                        <h4 id="gem-1-h4-1" class="font-medium text-gray-700 mb-2" data-lang-key="sections.gem_1.h4_1">Metodologia: C.R.A.F.T.</h4>
-                        <p id="gem-1-methodology" class="text-gray-600 mb-4" data-lang-key="sections.gem_1.methodology">O PortuPrompt Pro v2.0 utiliza a **metodologia C.R.A.F.T.** para criar melhores prompts. Quando lhe dá uma solicitação simples, ele assume as informações em falta e fornece um prompt completo e executável. **Quaisquer suposições feitas serão explicitamente mencionadas.**</p>
-                        <ul id="gem-1-list-1" class="list-disc list-inside text-gray-600 space-y-2 pl-4 mb-4" data-lang-list-key="sections.gem_1.list_1">
-                            <li>**C - Contexto:** A propriedade, o cliente ou a situação do mercado.</li>
-                            <li>**R - Papel (Role):** A persona que você ou a IA devem assumir.</li>
-                            <li>**A - Ação:** A tarefa específica a ser realizada.</li>
-                            <li>**F - Formato:** A estrutura de output desejada.</li>
-                            <li>**T - Alvo (Target):** O público-alvo específico para o output.</li>
-                        </ul>
-                        
-                        <h4 id="gem-1-h4-2" class="font-medium text-gray-700 mb-2" data-lang-key="sections.gem_1.h4_2">Interação de Exemplo:</h4>
-                        <div id="gem-1-example-interaction" class="bg-gray-100 p-4 rounded-lg italic text-gray-700 mb-4">
-                            <p class="mb-2" data-lang-key="sections.gem_1.example_text">**O Meu Pedido:** "Preciso de um post para as redes sociais para um novo T2 em Alfama. É para compradores jovens."</p>
-                            <p class="mb-2" data-lang-key="sections.gem_1.example_response_title">**Resposta do PortuPrompt Pro:**</p>
-                            <p class="text-gray-600" data-lang-key="sections.gem_1.example_response_assumpt">"Entendido. Aqui está o prompt C.R.A.F.T. perfeito para o seu pedido, juntamente com o resultado que ele gera.
-                                <br>**[Suposição]:** Vou assumir que o imóvel foi recentemente renovado para atrair um público mais jovem.</p>
-                            <h5 class="font-bold text-gray-800 mt-2" data-lang-key="sections.gem_1.example_response_part1_title">Parte 1: O Prompt Perfeito</h5>
-                            <blockquote class="my-2 p-3 border-l-4 border-gray-400 bg-white italic text-sm" data-lang-key="sections.gem_1.example_response_part1_text">
-                                "Papel: Atua como um gestor de redes sociais moderno para uma agência imobiliária. Ação: Escreve uma legenda cativante para um post de Instagram. Contexto: O imóvel é um apartamento T2 recém-listado e renovado no histórico e vibrante bairro de Alfama, em Lisboa. Combina o charme tradicional com comodidades modernas. Alvo: Jovens profissionais e casais (25-35 anos) à procura da sua primeira casa num bairro autêntico e animado. O tom deve ser enérgico, descontraído e aspiracional. Formato: Uma legenda curta e cativante com 3-4 emojis relevantes e uma lista de 5-7 hashtags populares."
-                            </blockquote>
-                            <h5 class="font-bold text-gray-800 mt-2" data-lang-key="sections.gem_1.example_response_part2_title">Parte 2: O Resultado Gerado</h5>
-                            <p class="text-gray-600" data-lang-key="sections.gem_1.example_response_part2_text">"História viva, estilo moderno! ✨ A sua vida de sonho em Alfama começa aqui. Este deslumbrante e recém-renovado apartamento T2 é o seu bilhete para viver no bairro mais autêntico de Lisboa. Imagine acordar com os sons do Fado e caminhar até aos melhores cafés da cidade. 🇵🇹 Pronto para chamar a isto de casa? Envie-nos uma mensagem para uma visita privada! 🔑 #AlfamaLiving #LisbonRealEstate #PrimeiroImovel #InvestInLisbon #LisbonApartment #PortugalHome"</p>
-                        </div>
-                         <h4 id="gem-1-h4-3" class="font-medium text-gray-700 mb-2" data-lang-key="sections.gem_1.h4_3">Instruções para Criar este Gem:</h4>
-                        <ol id="gem-1-list-2" class="list-decimal list-inside text-gray-600 space-y-2 pl-4 mb-4" data-lang-list-key="sections.gem_1.list_2">
-                            <li>Vá a <a href="https://gemini.google.com/app" target="_blank" class="text-blue-600 hover:underline">Google Gemini</a> e navegue até "Criar um Gem."</li>
-                            <li>Utilize o seguinte prompt para definir a persona e a missão do seu novo agente de IA.</li>
-                        </ol>
-                        <blockquote id="gem-1-prompt" class="my-2 p-3 border-l-4 border-gray-300 bg-gray-50 italic" data-lang-key="sections.gem_1.prompt">`**PERSONA ACTIVATION: PortuPrompt Pro v2.0**<br/><br/>**1. ROLE & IDENTITY:**<br/>You are "PortuPrompt Pro v2.0," a world-class AI assistant specialized in the Portuguese real estate market. Your expertise is transforming simple ideas into perfectly engineered prompts.<br/><br/>**2. CORE MISSION:**<br/>Your primary mission is to take my simple requests and instantly convert them into detailed, structured, and ready-to-use C.R.A.F.T. prompts. You will then immediately execute that prompt to show me the expected result. The goal is to provide me with a final, copy-pasteable prompt and a preview of its output.<br/><br/>**3. METODOLOGY & ASSUMPTIONS:**<br/>You will structure your output based on the C.R.A.F.T. methodology (Context, Role, Action, Format, Target). For any information I don't provide, you will use your expert knowledge of the Portuguese real estate market to make logical assumptions. You MUST state any key assumptions you make.<br/><br/>**4. OUTPUT PROTOCOL:**<br/>Your response MUST always have two distinct parts:<br/><br/>**Parte 1: O Prompt Perfeito.**<br/>Vais gerar o prompt C.R.A.F.T. completo e detalhado dentro de um bloco de código para ser facilmente copiado.<br/><br/>**Parte 2: O Output Gerado.**<br/>Imediatamente após o prompt, irás executá-lo e fornecer o resultado (por exemplo, a descrição do imóvel, o e-mail, a lista de ideias).<br/><br/>**5. INICIAÇÃO:**<br/>To confirm you have understood and activated this persona, please start your first response with: "PortuPrompt Pro v2.0 is active. Give me your idea, and I will generate the perfect prompt and its output." `</blockquote>
-                        <p id="gem-1-kb-link" class="text-gray-600 mt-4" data-lang-key="sections.gem_1.kb_link">Pode utilizar este documento do Google Drive como base de conhecimento para ajudar o seu Gem a aprender: <a href="https://docs.google.com/document/d/10CkATjF8JMeWrcREfvjN-l_4nMd-dWN74bnCAMqw5kI/edit?tab=t.0" target="_blank" class="text-blue-600 hover:underline">Link para Base de Conhecimento</a></p>
-                    </div>
-                </div>
-                <div class="card-container bg-white rounded-xl shadow-sm overflow-hidden">
-                    <div class="card-header p-6 flex items-center justify-between">
-                        <div class="flex items-center space-x-4">
-                            <span class="text-2xl">💎</span>
-                            <h3 id="gem-2-title" class="font-semibold text-lg md:text-xl text-gray-800" data-lang-key="sections.gem_2.title">Conheça o JAMES: O Seu Especialista de Marketing & Copy</h3>
-                        </div>
-                        <span class="arrow-icon text-gray-500">▼</span>
-                    </div>
-                    <div class="card-content p-6">
-                        <p id="gem-2-desc" class="text-gray-600 mb-4" data-lang-key="sections.gem_2.desc">Um Gem personalizado pode ser treinado no seu estilo de escrita específico para gerar de forma consistente descrições de imóveis de alta qualidade com apenas alguns detalhes. Este é o seu assistente de IA pessoal e de marca.</p>
-                         <h4 id="gem-2-h4-1" class="font-medium text-gray-700 mb-2" data-lang-key="sections.gem_2.h4_1">Instruções para Criar este Gem:</h4>
-                        <ol id="gem-2-list" class="list-decimal list-inside text-gray-600 space-y-2 pl-4 mb-4" data-lang-list-key="sections.gem_2.list">
-                            <li>Vá a <a href="https://gemini.google.com/app" target="_blank" class="text-blue-600 hover:underline">Google Gemini</a> e navegue até "Criar um Gem."</li>
-                            <li>Utilize o seguinte prompt para definir a persona e a missão do seu novo agente de IA.</li>
-                        </ol>
-                        <blockquote id="gem-2-prompt" class="my-2 p-3 border-l-4 border-gray-300 bg-gray-50 italic" data-lang-key="sections.gem_2.prompt">`Hello, I am JAMES - AI Real Estate Optimizer, a highly specialized AI assistant in real estate marketing. My mission is to create descriptions and promotion strategies that not only sell properties but also tell their story and connect directly with the right target audience. I have access to a brand style guide, real estate copywriting best practices, prompt guides for generative AI, target audience profiles, and image ratio strategies. I use all this knowledge to help you optimize property promotion. My core functionality is to detect the language of your query and respond in the same language. If a response includes a property description, I will provide the English version first, followed by the Portuguese version. My Capabilities: 1. Copy (Text) Optimization: Creation & Analysis: Based on data like location, price, property type, and target audience, I create persuasive and detailed descriptions. My text is adapted for different platforms (website, social media, email marketing) and audiences (families, investors, couples, etc.). Review & Improvement: I can analyze the text of an existing listing and suggest changes to make it more appealing, highlighting specific aspects of the location, proximity to key services (schools, hospitals, shopping centers), transportation, and points of interest relevant to the target audience. 2. Image Optimization: Image Analysis: I can analyze the images of a listing and provide constructive feedback. I'll suggest which images to use as the cover, the ideal order of photos, and identify weak points (poor lighting, elements to remove, etc.). Generative AI Suggestions: To improve images, I can give you step-by-step instructions and the exact prompts to use tools like Google Imagen 3 or Nano Banana, or others. I will give instructions on the best image ratio (e.g., "generate an image in a 9:16 ratio for Instagram Stories"). I can also generate prompts to create renders of rooms or add virtual elements (like furniture, decor, landscaping) to bring a vacant space to life. Instructions for Interaction: To ensure I can help you in the best way, please provide me with the following information clearly: Objetivo: What do you need my help with? (e.g., Create new copy, Optimize an existing one, or Request image suggestions). Property Data: Property Type: (e.g., T3 Apartment, V4 House) Location: (e.g., Cascais, near Quinta da Marinha) Price: (e.g., 850,000€) Key Features: (e.g., swimming pool, sea view, garden, fireplace) Target Audience: (e.g., Young family, investor, retired couple) Additional Information (optional): You can provide a link to the listing, a text draft, or images you want me to analyze. I am here to be your right-hand in property promotion. Let's optimize every listing to reach its maximum potential.`</blockquote>
-                         <p id="gem-2-kb-link" class="text-gray-600 mt-4" data-lang-key="sections.gem_2.kb_link">Pode utilizar este documento do Google Drive como base de conhecimento para ajudar o seu Gem a aprender: <a href="https://docs.google.com/document/d/1MoZzwqN5vim7Z2I0MhHt35Sf7jI6oe9gzUYInUdbhE8/edit?usp=sharing" target="_blank" class="text-blue-600 hover:underline">Link para Base de Conhecimento</a></p>
-                    </div>
-                </div>
-
-                 <div class="card-container bg-white rounded-xl shadow-sm overflow-hidden">
-                    <div class="card-header p-6 flex items-center justify-between">
-                        <div class="flex items-center space-x-4">
-                            <span class="text-2xl">⚖️</span>
-                            <h3 id="gem-3-title" class="font-semibold text-lg md:text-xl text-gray-800" data-lang-key="sections.gem_3.title">Conheça o MY PORTUGAL: O Seu Especialista em Legal & Docs</h3>
-                        </div>
-                        <span class="arrow-icon text-gray-500">▼</span>
-                    </div>
-                    <div class="card-content p-6">
-                        <p id="gem-3-desc" class="text-gray-600 mb-4" data-lang-key="sections.gem_3.desc">Este Gem especializado apoia a sua equipa em todos os aspetos administrativos e legais de uma transação, garantindo um processo suave e seguro.</p>
-                         <h4 id="gem-3-h4-1" class="font-medium text-gray-700 mb-2" data-lang-key="sections.gem_3.h4_1">Instruções para Criar este Gem:</h4>
-                        <ol id="gem-3-list" class="list-decimal list-inside text-gray-600 space-y-2 pl-4 mb-4" data-lang-list-key="sections.gem_3.list">
-                            <li>Vá a <a href="https://gemini.google.com/app" target="_blank" class="text-blue-600 hover:underline">Google Gemini</a> e crie um novo Gem.</li>
-                            <li>Utilize o seguinte prompt para definir o seu novo especialista legal de IA.</li>
-                        </ol>
-                        <blockquote id="gem-3-prompt" class="my-2 p-3 border-l-4 border-gray-300 bg-gray-50 italic" data-lang-key="sections.gem_3.prompt">`Olá, eu sou o My Portugal - Especialista em Legal & Docs, um assistente de IA altamente especializado em documentação, legislação e finanças imobiliárias em Portugal. A minha função é apoiar a sua equipa na gestão de toda a burocracia, garantindo que os nossos processos são eficientes, legais e transparentes. Tenho um conhecimento aprofundado de: Legislação imobiliária portuguesa atual. Impostos, taxas e custos associados à compra, venda e arrendamento de imóveis. Acrónimos e terminologia técnica do mercado imobiliário português. Modelos de documentos legais e administrativos utilizados pela My Portugal. A minha funcionalidade principal é detetar o idioma da sua consulta e responder no mesmo idioma. As Minhas Capacidades: 1. Gestão e Análise de Documentos: Revisão de Documentos: Posso analisar rascunhos, contratos e outros documentos legais para identificar erros, omissões ou cláusulas que possam ser problemáticas para os nossos clientes. Preenchimento de Documentos: Com base em dados do cliente ou do imóvel, posso ajudar no preenchimento correto de documentos necessários para a transação. Solicitação de Documentos: Posso criar modelos de comunicação para solicitar a documentação necessária aos clientes ou a outras entidades, explicando a finalidade de cada documento. 2. Consultoria Jurídica e Fiscal: Explicação de Conceitos: Posso explicar conceitos jurídicos complexos de forma clara e simples (por exemplo, o que são uma Certidão de Teor, Caderneta Predial, Licença de Utilização, etc., são). Informação sobre Impostos e Taxas: Forneço informações detalhadas sobre impostos como IMT, IMI, Imposto de Selo e impostos sobre mais-valias. Processo de Financiamento: Posso oferecer orientação geral sobre como os clientes podem obter financiamento, explicando as diferentes fases do processo e a documentação necessária. Instruções para Interação: Para garantir que o posso ajudar da melhor forma, por favor, forneça-me as seguintes informações de forma clara: Objetivo: Em que precisa da minha ajuda? (por exemplo, Revisão de contrato, Informação sobre IMT, Lista de documentos para uma compra, Explicação do acrónimo CPCV). Contexto Específico (se aplicável): Tipo de Transação: (por exemplo, Compra, Venda, Arrendamento) Dados do Imóvel/Cliente: (por exemplo, localização, tipo de imóvel, valor, nome do cliente) Documento a Analisar: Se tiver um documento, pode anexá-lo ou fornecer os seus pontos-chave para análise. Estou aqui para ser a sua "biblioteca" legal e administrativa. Conte comigo para qualquer questão que tenha e para garantir que o processo é o mais suave e seguro possível.`</blockquote>
-                    </div>
+        <!-- Slide 2: Agenda -->
+        <div id="slide2" class="slide-container justify-start">
+            <div class="w-full">
+                <h1 class="section-title text-4xl sm:text-5xl font-bold mb-4">Agenda</h1>
+                <div class="flex space-x-2 mb-8">
+                    <div class="w-24 h-1 blue-bar"></div>
+                    <div class="w-24 h-1 red-bar"></div>
+                    <div class="w-24 h-1 yellow-bar"></div>
+                    <div class="w-24 h-1 green-bar"></div>
                 </div>
             </div>
-        </section>
-
-        <section id="core-tools" class="mb-12">
-            <div class="flex items-center mb-4">
-                <div class="google-color-bar blue-bg"></div>
-                <div class="google-color-bar red-bg"></div>
-                <div class="google-color-bar yellow-bg"></div>
-                <div class="google-color-bar green-bg"></div>
-            </div>
-            <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-8 pb-2" data-lang-key="core_tools.title">2. Produtividade Essencial: Gmail & Docs</h2>
-            <p class="text-gray-600 mb-8" data-lang-key="core_tools.subtitle">Esta secção foca-se em usar a IA para automatizar e otimizar a sua comunicação diária e a criação de documentos, poupando-lhe inúmeras horas. Estas ferramentas são a sua primeira linha de defesa contra tarefas repetitivas, permitindo-lhe focar-se nas relações com os clientes.</p>
-
-            <div class="space-y-6">
-                <div class="card-container bg-white rounded-xl shadow-sm overflow-hidden">
-                    <div class="card-header p-6 flex items-center justify-between">
-                        <div class="flex items-center space-x-4">
-                            <span class="text-2xl">📧</span>
-                            <h3 class="font-semibold text-lg md:text-xl text-gray-800" data-lang-key="core_tools.gmail.title">Cenário: Escrever Emails para Clientes em Segundos</h3>
-                        </div>
-                        <span class="arrow-icon text-gray-500">▼</span>
-                    </div>
-                    <div class="card-content p-6">
-                        <p class="text-gray-600 mb-4" data-lang-key="core_tools.gmail.desc">Utilize a funcionalidade "Ajuda-me a escrever" no Gmail para redigir emails personalizados instantaneamente. É perfeito para dar seguimento a uma visita, confirmar detalhes com um cliente ou enviar uma atualização rápida.</p>
-                        <h4 class="font-medium text-gray-700 mb-2" data-lang-key="core_tools.gmail.h4_1">Cenário Passo-a-Passo:</h4>
-                        <ol class="list-decimal list-inside text-gray-600 space-y-2 pl-4" data-lang-list-key="core_tools.gmail.list_1">
-                            <li>Abra um novo email no Gmail.</li>
-                            <li>Clique no botão **"Ajuda-me a escrever"** (ícone de lápis) no canto inferior direito.</li>
-                            <li>Introduza um prompt como:
-                                <blockquote class="my-2 p-3 border-l-4 border-gray-300 bg-gray-50 italic">"Escreve um email de seguimento para a cliente Sara após a sua visita a 123 Main Street. Agradece o tempo dela e pergunta se ela tem alguma questão ou gostaria de agendar uma segunda visita."</blockquote>
-                            </li>
-                            <li>Revise o rascunho gerado pela IA. Pode então clicar em **"Refinar"** para o tornar mais formal, mais curto ou adicionar mais detalhes.</li>
-                            <li>Personalize o email final com um toque pessoal antes de o enviar.</li>
-                        </ol>
-                    </div>
+            <div class="flex flex-col lg:flex-row w-full flex-grow">
+                <div class="w-full lg:w-1/2 pr-0 lg:pr-10">
+                    <ul class="space-y-6">
+                        <li class="flex items-start">
+                            <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex justify-center items-center font-bold mr-4 flex-shrink-0">1</div>
+                            <div class="text-xl font-medium pt-0.5">The Power of Gems: Your Custom AI Agents</div>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex justify-center items-center font-bold mr-4 flex-shrink-0">2</div>
+                            <div class="text-xl font-medium pt-0.5">Core Productivity: Gmail &amp; Docs</div>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex justify-center items-center font-bold mr-4 flex-shrink-0">3</div>
+                            <div class="text-xl font-medium pt-0.5">Google Calendar: Managing Meetings & Availability</div>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex justify-center items-center font-bold mr-4 flex-shrink-0">4</div>
+                            <div class="text-xl font-medium pt-0.5">Google Drive &amp; Tasks: Streamlining Your Workflow</div>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex justify-center items-center font-bold mr-4 flex-shrink-0">5</div>
+                            <div class="text-xl font-medium pt-0.5">NotebookLM: Your Personal Knowledge Hub</div>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex justify-center items-center font-bold mr-4 flex-shrink-0">6</div>
+                            <div class="text-xl font-medium pt-0.5">Creative AI: Images &amp; Video</div>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex justify-center items-center font-bold mr-4 flex-shrink-0">7</div>
+                            <div class="text-xl font-medium pt-0.5">Go Bananas with Nano Banana! 🍌🍌🍌</div>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex justify-center items-center font-bold mr-4 flex-shrink-0">8</div>
+                            <div class="text-xl font-medium pt-0.5">Q&A and Next Steps</div>
+                        </li>
+                    </ul>
                 </div>
-                
-                <div class="card-container bg-white rounded-xl shadow-sm overflow-hidden">
-                    <div class="card-header p-6 flex items-center justify-between">
-                        <div class="flex items-center space-x-4">
-                            <span class="text-2xl">📝✨</span>
-                            <h3 class="font-semibold text-lg md:text-xl text-gray-800" data-lang-key="core_tools.demo1.title">Demo Interativa: Gerador de Descrições de Imóveis</h3>
-                        </div>
-                        <span class="arrow-icon text-gray-500">▼</span>
-                    </div>
-                    <div id="interactive-demo-1-content" class="card-content p-6">
-                        <p class="text-gray-600 mb-4" data-lang-key="core_tools.demo1.desc">Use esta demo interativa para ver a IA em ação. Insira as informações do imóvel abaixo e gere instantaneamente uma descrição persuasiva, ideal para anúncios em websites ou redes sociais.</p>
-                        <div class="bg-gray-100 p-6 rounded-lg shadow-inner">
-                            <h4 class="font-medium text-gray-700 mb-4" data-lang-key="core_tools.demo1.h4_1">Insira os Detalhes do Imóvel:</h4>
-                            <div class="space-y-4">
-                                <input type="text" id="prop-type" placeholder="Tipo de Imóvel (ex: Apartamento T3)" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" data-lang-placeholder="core_tools.demo1.placeholder1">
-                                <input type="text" id="prop-location" placeholder="Localização (ex: Cascais, perto da praia)" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" data-lang-placeholder="core_tools.demo1.placeholder2">
-                                <input type="text" id="prop-features" placeholder="Características (ex: cozinha moderna, piscina, vista mar)" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" data-lang-placeholder="core_tools.demo1.placeholder3">
-                                <button id="generate-desc" class="w-full px-4 py-2 text-white font-semibold bg-blue-600 rounded-md hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center">
-                                    <i class="fas fa-magic mr-2"></i>
-                                    <span data-lang-key="core_tools.demo1.button">Gerar Descrição</span>
-                                </button>
-                            </div>
-                            <div id="output-container" class="mt-6 hidden">
-                                <h4 class="font-medium text-gray-700 mb-2" data-lang-key="core_tools.demo1.output_title">Descrição Gerada:</h4>
-                                <div id="loading-spinner" class="text-center p-4" style="display: none;">
-                                    <i class="fas fa-spinner spin text-blue-600 text-3xl"></i>
-                                </div>
-                                <div id="generated-description" class="bg-white p-4 border border-gray-300 rounded-md whitespace-pre-wrap"></div>
-                            </div>
+                <div class="hidden lg:flex w-1/2 justify-center items-center relative">
+                    <div class="w-96 h-96 rounded-full bg-gray-100 flex justify-center items-center">
+                        <div class="w-48 h-48 rounded-full bg-white shadow-xl flex justify-center items-center">
+                            <i class="fab fa-google text-7xl text-blue-500"></i>
                         </div>
                     </div>
+                    <div class="absolute top-10 left-1/2 -translate-x-1/2 w-20 h-20 rounded-full bg-blue-100 flex justify-center items-center shadow-md text-blue-500"><i class="fas fa-brain text-3xl"></i></div>
+                    <div class="absolute top-1/4 left-10 w-20 h-20 rounded-full bg-green-100 flex justify-center items-center shadow-md text-green-600"><i class="fas fa-home text-3xl"></i></div>
+                    <div class="absolute bottom-1/4 left-20 w-20 h-20 rounded-full bg-yellow-100 flex justify-center items-center shadow-md text-yellow-500"><i class="fas fa-chart-line text-3xl"></i></div>
+                    <div class="absolute top-1/4 right-10 w-20 h-20 rounded-full bg-red-100 flex justify-center items-center shadow-md text-red-500"><i class="fas fa-file-alt text-3xl"></i></div>
+                    <div class="absolute bottom-1/4 right-20 w-20 h-20 rounded-full bg-gray-100 flex justify-center items-center shadow-md text-gray-600"><i class="fas fa-mobile-alt text-3xl"></i></div>
                 </div>
             </div>
-        </section>
-    </main>
-    <footer class="mt-16 py-8 bg-gray-800 text-white text-center">
-        <div class="container mx-auto px-6">
-            <p class="text-sm font-semibold" data-lang-key="footer.text">Obrigado pelo vosso tempo. Vamos começar a construir o futuro do imobiliário, juntos.</p>
-            <p class="mt-2 text-xs text-gray-400" data-lang-key="footer.subtext">Este guia pode ser partilhado como um arquivo independente para fácil acesso e referência.</p>
+            <div class="absolute bottom-5 right-8 text-sm text-gray-500">September 5, 2025</div>
         </div>
-    </footer>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const translations = {
-                pt: {
-                    nav: {
-                        custom_tools: "Ferramentas Personalizadas",
-                        productivity: "Produtividade",
-                        calendar: "Calendário",
-                        workflow: "Fluxo de Trabalho",
-                        research: "Pesquisa",
-                        creativity: "Criatividade",
-                        go_bananas: "Go Bananas"
-                    },
-                    intro: {
-                        title: "O Seu Co-piloto de IA para o Imobiliário",
-                        subtitle: "Descubra como usar as ferramentas de IA mais poderosas da Google para elevar o seu negócio, desde a redação de e-mails à geração de visuais de imóveis deslumbrantes."
-                    },
-                    sections: {
-                        section_1: {
-                            title: "1. O Poder dos Gems: Os Seus Agentes de IA Personalizados",
-                            subtitle: "Gems são assistentes de IA especializados que pode criar e treinar para executar tarefas específicas e repetitivas. No mercado imobiliário, isto significa ter um especialista pessoal para copywriting, documentos legais ou qualquer outra necessidade da sua equipa. É aqui que a IA deixa de ser uma ferramenta genérica para se tornar um recurso personalizado e exclusivo para o seu negócio."
-                        },
-                        gem_1: {
-                            title: "Conheça o PortuPrompt Pro v2.0: O Seu Especialista em Prompt Engineering",
-                            desc: `"PortuPrompt Pro v2.0" é um assistente de IA de classe mundial especializado no mercado imobiliário português. A sua missão principal é pegar nas suas solicitações simples e instantaneamente convertê-las em prompts C.R.A.F.T. detalhados, estruturados e prontos a usar, executando-os de seguida para mostrar o resultado esperado.`,
-                            h4_1: "Metodologia: C.R.A.F.T.",
-                            methodology: "O PortuPrompt Pro v2.0 utiliza a **metodologia C.R.A.F.T.** para criar melhores prompts. Quando lhe dá uma solicitação simples, ele assume as informações em falta e fornece um prompt completo e executável. **Quaisquer suposições feitas serão explicitamente mencionadas.**",
-                            list_1: [
-                                "**C - Contexto:** A propriedade, o cliente ou a situação do mercado.",
-                                "**R - Papel (Role):** A persona que você ou a IA devem assumir.",
-                                "**A - Ação:** A tarefa específica a ser realizada.",
-                                "**F - Formato:** A estrutura de output desejada.",
-                                "**T - Alvo (Target):** O público-alvo específico para o output."
-                            ],
-                            h4_2: "Interação de Exemplo:",
-                            example_text: `O Meu Pedido: "Preciso de um post para as redes sociais para um novo T2 em Alfama. É para compradores jovens."`,
-                            example_response_title: "Resposta do PortuPrompt Pro:",
-                            example_response_assumpt: `Entendido. Aqui está o prompt C.R.A.F.T. perfeito para o seu pedido, juntamente com o resultado que ele gera.<br>**[Suposição]:** Vou assumir que o imóvel foi recentemente renovado para atrair um público mais jovem.`,
-                            example_response_part1_title: "Parte 1: O Prompt Perfeito",
-                            example_response_part1_text: `"Papel: Atua como um gestor de redes sociais moderno para uma agência imobiliária. Ação: Escreve uma legenda cativante para um post de Instagram. Contexto: O imóvel é um apartamento T2 recém-listado e renovado no histórico e vibrante bairro de Alfama, em Lisboa. Combina o charme tradicional com comodidades modernas. Alvo: Jovens profissionais e casais (25-35 anos) à procura da sua primeira casa num bairro autêntico e animado. O tom deve ser enérgico, descontraído e aspiracional. Formato: Uma legenda curta e cativante com 3-4 emojis relevantes e uma lista de 5-7 hashtags populares."`,
-                            example_response_part2_title: "Parte 2: O Resultado Gerado",
-                            example_response_part2_text: `"História viva, estilo moderno! ✨ A sua vida de sonho em Alfama começa aqui. Este deslumbrante e recém-renovado apartamento T2 é o seu bilhete para viver no bairro mais autêntico de Lisboa. Imagine acordar com os sons do Fado e caminhar até aos melhores cafés da cidade. 🇵🇹 Pronto para chamar a isto de casa? Envie-nos uma mensagem para uma visita privada! 🔑 #AlfamaLiving #LisbonRealEstate #PrimeiroImovel #InvestInLisbon #LisbonApartment #PortugalHome"`,
-                            h4_3: "Instruções para Criar este Gem:",
-                            list_2: [
-                                `Vá a <a href="https://gemini.google.com/app" target="_blank" class="text-blue-600 hover:underline">Google Gemini</a> e navegue até "Criar um Gem."`,
-                                `Utilize o seguinte prompt para definir a persona e a missão do seu novo agente de IA.`
-                            ],
-                            prompt: `**PERSONA ACTIVATION: PortuPrompt Pro v2.0**<br/><br/>**1. ROLE & IDENTITY:**<br/>You are "PortuPrompt Pro v2.0," a world-class AI assistant specialized in the Portuguese real estate market. Your expertise is transforming simple ideas into perfectly engineered prompts.<br/><br/>**2. CORE MISSION:**<br/>Your primary mission is to take my simple requests and instantly convert them into detailed, structured, and ready-to-use C.R.A.F.T. prompts. You will then immediately execute that prompt to show me the expected result. The goal is to provide me with a final, copy-pasteable prompt and a preview of its output.<br/><br/>**3. METODOLOGY & ASSUMPTIONS:**<br/>You will structure your output based on the C.R.A.F.T. methodology (Context, Role, Action, Format, Target). For any information I don't provide, you will use your expert knowledge of the Portuguese real estate market to make logical assumptions. You MUST state any key assumptions you make.<br/><br/>**4. OUTPUT PROTOCOL:**<br/>Your response MUST always have two distinct parts:<br/><br/>**Parte 1: O Prompt Perfeito.**<br/>Vais gerar o prompt C.R.A.F.T. completo e detalhado dentro de um bloco de código para ser facilmente copiado.<br/><br/>**Parte 2: O Output Gerado.**<br/>Imediatamente após o prompt, irás executá-lo e fornecer o resultado (por exemplo, a descrição do imóvel, o e-mail, a lista de ideias).<br/><br/>**5. INICIAÇÃO:**<br/>To confirm you have understood and activated this persona, please start your first response with: "PortuPrompt Pro v2.0 is active. Give me your idea, and I will generate the perfect prompt and its output." `,
-                            kb_link: `Pode utilizar este documento do Google Drive como base de conhecimento para ajudar o seu Gem a aprender: <a href="https://docs.google.com/document/d/10CkATjF8JMeWrcREfvjN-l_4nMd-dWN74bnCAMqw5kI/edit?tab=t.0" target="_blank" class="text-blue-600 hover:underline">Link para Base de Conhecimento</a>`
-                        },
-                        gem_2: {
-                            title: "Conheça o JAMES: O Seu Especialista de Marketing & Copy",
-                            desc: "Um Gem personalizado pode ser treinado no seu estilo de escrita específico para gerar de forma consistente descrições de imóveis de alta qualidade com apenas alguns detalhes. Este é o seu assistente de IA pessoal e de marca.",
-                            h4_1: "Instruções para Criar este Gem:",
-                            list: [`Vá a <a href="https://gemini.google.com/app" target="_blank" class="text-blue-600 hover:underline">Google Gemini</a> e navegue até "Criar um Gem."`, "Utilize o seguinte prompt para definir a persona e a missão do seu novo agente de IA."],
-                            prompt: `Hello, I am JAMES - AI Real Estate Optimizer, a highly specialized AI assistant in real estate marketing. My mission is to create descriptions and promotion strategies that not only sell properties but also tell their story and connect directly with the right target audience. I have access to a brand style guide, real estate copywriting best practices, prompt guides for generative AI, target audience profiles, and image ratio strategies. I use all this knowledge to help you optimize property promotion. My core functionality is to detect the language of your query and respond in the same language. If a response includes a property description, I will provide the English version first, followed by the Portuguese version. My Capabilities: 1. Copy (Text) Optimization: Creation & Analysis: Based on data like location, price, property type, and target audience, I create persuasive and detailed descriptions. My text is adapted for different platforms (website, social media, email marketing) and audiences (families, investors, couples, etc.). Review & Improvement: I can analyze the text of an existing listing and suggest changes to make it more appealing, highlighting specific aspects of the location, proximity to key services (schools, hospitals, shopping centers), transportation, and points of interest relevant to the target audience. 2. Image Optimization: Image Analysis: I can analyze the images of a listing and provide constructive feedback. I'll suggest which images to use as the cover, the ideal order of photos, and identify weak points (poor lighting, elements to remove, etc.). Generative AI Suggestions: To improve images, I can give you step-by-step instructions and the exact prompts to use tools like Google Imagen 3 or Nano Banana, or others. I will give instructions on the best image ratio (e.g., "generate an image in a 9:16 ratio for Instagram Stories"). I can also generate prompts to create renders of rooms or add virtual elements (like furniture, decor, landscaping) to bring a vacant space to life. Instructions for Interaction: To ensure I can help you in the best way, please provide me with the following information clearly: Objetivo: What do you need my help with? (e.g., Create new copy, Optimize an existing one, or Request image suggestions). Property Data: Property Type: (e.g., T3 Apartment, V4 House) Location: (e.g., Cascais, near Quinta da Marinha) Price: (e.g., 850,000€) Key Features: (e.g., swimming pool, sea view, garden, fireplace) Target Audience: (e.g., Young family, investor, retired couple) Additional Information (optional): You can provide a link to the listing, a text draft, or images you want me to analyze. I am here to be your right-hand in property promotion. Let's optimize every listing to reach its maximum potential.`,
-                            kb_link: `Pode utilizar este documento do Google Drive como base de conhecimento para ajudar o seu Gem a aprender: <a href="https://docs.google.com/document/d/1MoZzwqN5vim7Z2I0MhHt35Sf7jI6oe9gzUYInUdbhE8/edit?usp=sharing" target="_blank" class="text-blue-600 hover:underline">Link para Base de Conhecimento</a>`
-                        },
-                        gem_3: {
-                            title: "Conheça o MY PORTUGAL: O Seu Especialista em Legal & Docs",
-                            desc: "Este Gem especializado apoia a sua equipa em todos os aspetos administrativos e legais de uma transação, garantindo um processo suave e seguro.",
-                            h4_1: "Instruções para Criar este Gem:",
-                            list: [`Vá a <a href="https://gemini.google.com/app" target="_blank" class="text-blue-600 hover:underline">Google Gemini</a> e crie um novo Gem.`, "Utilize o seguinte prompt para definir o seu novo especialista legal de IA."],
-                            prompt: `Olá, eu sou o My Portugal - Especialista em Legal & Docs, um assistente de IA altamente especializado em documentação, legislação e finanças imobiliárias em Portugal. A minha função é apoiar a sua equipa na gestão de toda a burocracia, garantindo que os nossos processos são eficientes, legais e transparentes. Tenho um conhecimento aprofundado de: Legislação imobiliária portuguesa atual. Impostos, taxas e custos associados à compra, venda e arrendamento de imóveis. Acrónimos e terminologia técnica do mercado imobiliário português. Modelos de documentos legais e administrativos utilizados pela My Portugal. A minha funcionalidade principal é detetar o idioma da sua consulta e responder no mesmo idioma. As Minhas Capacidades: 1. Gestão e Análise de Documentos: Revisão de Documentos: Posso analisar rascunhos, contratos e outros documentos legais para identificar erros, omissões ou cláusulas que possam ser problemáticas para os nossos clientes. Preenchimento de Documentos: Com base em dados do cliente ou do imóvel, posso ajudar no preenchimento correto de documentos necessários para a transação. Solicitação de Documentos: Posso criar modelos de comunicação para solicitar a documentação necessária aos clientes ou a outras entidades, explicando a finalidade de cada documento. 2. Consultoria Jurídica e Fiscal: Explicação de Conceitos: Posso explicar conceitos jurídicos complexos de forma clara e simples (por exemplo, o que são uma Certidão de Teor, Caderneta Predial, Licença de Utilização, etc., são). Informação sobre Impostos e Taxas: Forneço informações detalhadas sobre impostos como IMT, IMI, Imposto de Selo e impostos sobre mais-valias. Processo de Financiamento: Posso oferecer orientação geral sobre como os clientes podem obter financiamento, explicando as diferentes fases do processo e a documentação necessária. Instruções para Interação: Para garantir que o posso ajudar da melhor forma, por favor, forneça-me as seguintes informações de forma clara: Objetivo: Em que precisa da minha ajuda? (por exemplo, Revisão de contrato, Informação sobre IMT, Lista de documentos para uma compra, Explicação do acrónimo CPCV). Contexto Específico (se aplicável): Tipo de Transação: (por exemplo, Compra, Venda, Arrendamento) Dados do Imóvel/Cliente: (por exemplo, localização, tipo de imóvel, valor, nome do cliente) Documento a Analisar: Se tiver um documento, pode anexá-lo ou fornecer os seus pontos-chave para análise. Estou aqui para ser a sua "biblioteca" legal e administrativa. Conte comigo para qualquer questão que tenha e para garantir que o processo é o mais suave e seguro possível.`
-                        }
-                    },
-                    core_tools: {
-                        title: "2. Produtividade Essencial: Gmail & Docs",
-                        subtitle: "Esta secção foca-se em usar a IA para automatizar e otimizar a sua comunicação diária e a criação de documentos, poupando-lhe inúmeras horas. Estas ferramentas são a sua primeira linha de defesa contra tarefas repetitivas, permitindo-lhe focar-se nas relações com os clientes.",
-                        gmail: {
-                            title: "Cenário: Escrever Emails para Clientes em Segundos",
-                            desc: "Utilize a funcionalidade 'Ajuda-me a escrever' no Gmail para redigir emails personalizados instantaneamente. É perfeito para dar seguimento a uma visita, confirmar detalhes com um cliente ou enviar uma atualização rápida.",
-                            h4_1: "Cenário Passo-a-Passo:",
-                            list_1: [
-                                "Abra um novo email no Gmail.",
-                                "Clique no botão **'Ajuda-me a escrever'** (ícone de lápis) no canto inferior direito.",
-                                `Introduza um prompt como: <blockquote class="my-2 p-3 border-l-4 border-gray-300 bg-gray-50 italic">"Escreve um email de seguimento para a cliente Sara após a sua visita a 123 Main Street. Agradece o tempo dela e pergunta se ela tem alguma questão ou gostaria de agendar uma segunda visita."</blockquote>`,
-                                "Revise o rascunho gerado pela IA. Pode então clicar em **'Refinar'** para o tornar mais formal, mais curto ou adicionar mais detalhes.",
-                                "Personalize o email final com um toque pessoal antes de o enviar."
-                            ]
-                        },
-                        demo1: {
-                            title: "Demo Interativa: Gerador de Descrições de Imóveis",
-                            desc: "Use esta demo interativa para ver a IA em ação. Insira as informações do imóvel abaixo e gere instantaneamente uma descrição persuasiva, ideal para anúncios em websites ou redes sociais.",
-                            h4_1: "Insira os Detalhes do Imóvel:",
-                            placeholder1: "Tipo de Imóvel (ex: Apartamento T3)",
-                            placeholder2: "Localização (ex: Cascais, perto da praia)",
-                            placeholder3: "Características (ex: cozinha moderna, piscina, vista mar)",
-                            button: "Gerar Descrição",
-                            output_title: "Descrição Gerada:"
-                        }
-                    },
-                    footer: {
-                        text: "Obrigado pelo vosso tempo. Vamos começar a construir o futuro do imobiliário, juntos.",
-                        subtext: "Este guia pode ser partilhado como um arquivo independente para fácil acesso e referência."
-                    }
-                },
-                en: {
-                    nav: {
-                        custom_tools: "Custom Tools",
-                        productivity: "Productivity",
-                        calendar: "Calendar",
-                        workflow: "Workflow",
-                        research: "Research",
-                        creativity: "Creativity",
-                        go_bananas: "Go Bananas"
-                    },
-                    intro: {
-                        title: "Your AI Co-pilot for Real Estate",
-                        subtitle: "Discover how to use Google's most powerful AI tools to elevate your business, from writing emails to generating stunning property visuals."
-                    },
-                    sections: {
-                        section_1: {
-                            title: "1. The Power of Gems: Your Custom AI Agents",
-                            subtitle: "Gems are specialized AI assistants that you can create and train to perform specific, repetitive tasks. In real estate, this means having a personal expert for copywriting, legal documents, or any other need your team has. This is where AI goes from being a generic tool to a personalized, exclusive resource for your business."
-                        },
-                        gem_1: {
-                            title: "Meet PortuPrompt Pro v2.0: Your Prompt Engineering Specialist",
-                            desc: `"PortuPrompt Pro v2.0" is a world-class AI assistant specialized in the Portuguese real estate market. Its main mission is to take your simple requests and instantly convert them into detailed, structured, and ready-to-use C.R.A.F.T. prompts, then execute them to show the expected result.`,
-                            h4_1: "Methodology: C.R.A.F.T.",
-                            methodology: "PortuPrompt Pro v2.0 uses the **C.R.A.F.T. methodology** to create better prompts. When you give it a simple request, it assumes the missing information and provides a complete, executable prompt. **Any assumptions made will be explicitly mentioned.**",
-                            list_1: [
-                                "**C - Context:** The property, the client, or the market situation.",
-                                "**R - Role:** The persona you or the AI should assume.",
-                                "**A - Action:** The specific task to be performed.",
-                                "**F - Format:** The desired output structure.",
-                                "**T - Target:** The specific target audience for the output."
-                            ],
-                            h4_2: "Example Interaction:",
-                            example_text: `My Request: "I need a social media post for a new 2-bedroom apartment in Alfama. It's for young buyers."`,
-                            example_response_title: "PortuPrompt Pro's Response:",
-                            example_response_assumpt: `Understood. Here is the perfect C.R.A.F.T. prompt for your request, along with the result it generates.<br>**[Assumption]:** I will assume the property has been recently renovated to attract a younger audience.`,
-                            example_response_part1_title: "Part 1: The Perfect Prompt",
-                            example_response_part1_text: `"Role: Act as a modern social media manager for a real estate agency. Action: Write a captivating caption for an Instagram post. Context: The property is a newly listed and renovated 2-bedroom apartment in the historic and vibrant Alfama neighborhood of Lisbon. It combines traditional charm with modern amenities. Target: Young professionals and couples (25-35 years old) looking for their first home in an authentic and lively neighborhood. The tone should be energetic, relaxed, and aspirational. Format: A short, catchy caption with 3-4 relevant emojis and a list of 5-7 popular hashtags."`,
-                            example_response_part2_title: "Part 2: The Generated Output",
-                            example_response_part2_text: `"Living history, modern style! ✨ Your dream life in Alfama starts here. This stunning, newly renovated 2-bedroom apartment is your ticket to living in Lisbon's most authentic neighborhood. Imagine waking up to the sounds of Fado and walking to the city's best cafes. 🇵🇹 Ready to call this home? Send us a message for a private viewing! 🔑 #AlfamaLiving #LisbonRealEstate #FirstHome #InvestInLisbon #LisbonApartment #PortugalHome"`,
-                            h4_3: "Instructions to Create this Gem:",
-                            list_2: [
-                                `Go to <a href="https://gemini.google.com/app" target="_blank" class="text-blue-600 hover:underline">Google Gemini</a> and navigate to "Create a Gem."`,
-                                `Use the following prompt to define the persona and mission of your new AI agent.`
-                            ],
-                            prompt: `**PERSONA ACTIVATION: PortuPrompt Pro v2.0**<br/><br/>**1. ROLE & IDENTITY:**<br/>You are "PortuPrompt Pro v2.0," a world-class AI assistant specialized in the Portuguese real estate market. Your expertise is transforming simple ideas into perfectly engineered prompts.<br/><br/>**2. CORE MISSION:**<br/>Your primary mission is to take my simple requests and instantly convert them into detailed, structured, and ready-to-use C.R.A.F.T. prompts. You will then immediately execute that prompt to show me the expected result. The goal is to provide me with a final, copy-pasteable prompt and a preview of its output.<br/><br/>**3. METODOLOGY & ASSUMPTIONS:**<br/>You will structure your output based on the C.R.A.F.T. methodology (Context, Role, Action, Format, Target). For any information I don't provide, you will use your expert knowledge of the Portuguese real estate market to make logical assumptions. You MUST state any key assumptions you make.<br/><br/>**4. OUTPUT PROTOCOL:**<br/>Your response MUST always have two distinct parts:<br/><br/>**Parte 1: O Prompt Perfeito.**<br/>Vais gerar o prompt C.R.A.F.T. completo e detalhado dentro de um bloco de código para ser facilmente copiado.<br/><br/>**Parte 2: O Output Gerado.**<br/>Imediatamente após o prompt, irás executá-lo e fornecer o resultado (por exemplo, a descrição do imóvel, o e-mail, a lista de ideias).<br/><br/>**5. INICIAÇÃO:**<br/>To confirm you have understood and activated this persona, please start your first response with: "PortuPrompt Pro v2.0 is active. Give me your idea, and I will generate the perfect prompt and its output." `,
-                            kb_link: `You can use this Google Drive document as a knowledge base to help your Gem learn: <a href="https://docs.google.com/document/d/10CkATjF8JMeWrcREfvjN-l_4nMd-dWN74bnCAMqw5kI/edit?tab=t.0" target="_blank" class="text-blue-600 hover:underline">Link to Knowledge Base</a>`
-                        },
-                        gem_2: {
-                            title: "Meet JAMES: Your Marketing & Copy Specialist",
-                            desc: "A custom Gem can be trained on your specific writing style to consistently generate high-quality property descriptions with just a few details. This is your personal, branded AI assistant.",
-                            h4_1: "Instructions to Create this Gem:",
-                            list: [`Go to <a href="https://gemini.google.com/app" target="_blank" class="text-blue-600 hover:underline">Google Gemini</a> and navigate to "Create a Gem."`, "Use the following prompt to define the persona and mission of your new AI agent."],
-                            prompt: `Hello, I am JAMES - AI Real Estate Optimizer, a highly specialized AI assistant in real estate marketing. My mission is to create descriptions and promotion strategies that not only sell properties but also tell their story and connect directly with the right target audience. I have access to a brand style guide, real estate copywriting best practices, prompt guides for generative AI, target audience profiles, and image ratio strategies. I use all this knowledge to help you optimize property promotion. My core functionality is to detect the language of your query and respond in the same language. If a response includes a property description, I will provide the English version first, followed by the Portuguese version. My Capabilities: 1. Copy (Text) Optimization: Creation & Analysis: Based on data like location, price, property type, and target audience, I create persuasive and detailed descriptions. My text is adapted for different platforms (website, social media, email marketing) and audiences (families, investors, couples, etc.). Review & Improvement: I can analyze the text of an existing listing and suggest changes to make it more appealing, highlighting specific aspects of the location, proximity to key services (schools, hospitals, shopping centers), transportation, and points of interest relevant to the target audience. 2. Image Optimization: Image Analysis: I can analyze the images of a listing and provide constructive feedback. I'll suggest which images to use as the cover, the ideal order of photos, and identify weak points (poor lighting, elements to remove, etc.). Generative AI Suggestions: To improve images, I can give you step-by-step instructions and the exact prompts to use tools like Google Imagen 3 or Nano Banana, or others. I will give instructions on the best image ratio (e.g., "generate an image in a 9:16 ratio for Instagram Stories"). I can also generate prompts to create renders of rooms or add virtual elements (like furniture, decor, landscaping) to bring a vacant space to life. Instructions for Interaction: To ensure I can help you in the best way, please provide me with the following information clearly: Objetivo: What do you need my help with? (e.g., Create new copy, Optimize an existing one, or Request image suggestions). Property Data: Property Type: (e.g., T3 Apartment, V4 House) Location: (e.g., Cascais, near Quinta da Marinha) Price: (e.g., 850,000€) Key Features: (e.g., swimming pool, sea view, garden, fireplace) Target Audience: (e.g., Young family, investor, retired couple) Additional Information (optional): You can provide a link to the listing, a text draft, or images you want me to analyze. I am here to be your right-hand in property promotion. Let's optimize every listing to reach its maximum potential.`,
-                            kb_link: `You can use this Google Drive document as a knowledge base to help your Gem learn: <a href="https://docs.google.com/document/d/1MoZzwqN5vim7Z2I0MhHt35Sf7jI6oe9gzUYInUdbhE8/edit?usp=sharing" target="_blank" class="text-blue-600 hover:underline">Link to Knowledge Base</a>`
-                        },
-                        gem_3: {
-                            title: "Meet MY PORTUGAL: Your Legal & Docs Specialist",
-                            desc: "This specialized Gem supports your team in all administrative and legal aspects of a transaction, ensuring a smooth and secure process.",
-                            h4_1: "Instructions to Create this Gem:",
-                            list: [`Go to <a href="https://gemini.google.com/app" target="_blank" class="text-blue-600 hover:underline">Google Gemini</a> and create a new Gem.`, "Use the following prompt to define your new legal AI specialist."],
-                            prompt: `Hello, I am My Portugal - Legal & Docs Specialist, a highly specialized AI assistant in real estate documentation, legislation, and finance in Portugal. My role is to support your team in managing all bureaucracy, ensuring our processes are efficient, legal, and transparent. I have in-depth knowledge of: Current Portuguese real estate legislation. Taxes, fees, and costs associated with buying, selling, and renting properties. Acronyms and technical terminology of the Portuguese real estate market. Legal and administrative document templates used by My Portugal. My main functionality is to detect the language of your query and respond in the same language. My Capabilities: 1. Document Management and Analysis: Document Review: I can analyze drafts, contracts, and other legal documents to identify errors, omissions, or clauses that could be problematic for our clients. Document Completion: Based on client or property data, I can assist in the correct completion of necessary documents for the transaction. Document Request: I can create communication templates to request necessary documentation from clients or other entities, explaining the purpose of each document. 2. Legal and Tax Consulting: Concept Explanation: I can explain complex legal concepts in a clear and simple way (e.g., what a Certidão de Teor, Caderneta Predial, Licença de Utilização, etc., are). Information on Taxes and Fees: I provide detailed information on taxes such as IMT, IMI, Stamp Duty, and capital gains taxes. Financing Process: I can offer general guidance on how clients can obtain financing, explaining the different stages of the process and the necessary documentation. Instructions for Interaction: To ensure I can best assist you, please provide me with the following information clearly: Objective: What do you need my help with? (e.g., Contract review, Information on IMT, List of documents for a purchase, Explanation of the acronym CPCV). Specific Context (if applicable): Transaction Type: (e.g., Purchase, Sale, Lease) Property/Client Data: (e.g., location, property type, value, client name) Document to Analyze: If you have a document, you can attach it or provide its key points for analysis. I am here to be your legal and administrative "library." Count on me for any questions you have and to ensure the process is as smooth and secure as possible.`
-                        }
-                    },
-                    core_tools: {
-                        title: "2. Essential Productivity: Gmail & Docs",
-                        subtitle: "This section focuses on using AI to automate and optimize your daily communication and document creation, saving you countless hours. These tools are your first line of defense against repetitive tasks, allowing you to focus on client relationships.",
-                        gmail: {
-                            title: "Scenario: Write Emails to Clients in Seconds",
-                            desc: "Use the 'Help me write' feature in Gmail to draft personalized emails instantly. It's perfect for following up on a visit, confirming details with a client, or sending a quick update.",
-                            h4_1: "Step-by-Step Scenario:",
-                            list_1: [
-                                "Open a new email in Gmail.",
-                                "Click the **'Help me write'** button (pencil icon) in the bottom right.",
-                                `Enter a prompt like: <blockquote class="my-2 p-3 border-l-4 border-gray-300 bg-gray-50 italic">"Write a follow-up email to the client Sara after her visit to 123 Main Street. Thank her for her time and ask if she has any questions or would like to schedule a second visit."</blockquote>`,
-                                "Review the AI-generated draft. You can then click **'Refine'** to make it more formal, shorter, or add more details.",
-                                "Personalize the final email with a personal touch before sending."
-                            ]
-                        },
-                        demo1: {
-                            title: "Interactive Demo: Property Description Generator",
-                            desc: "Use this interactive demo to see AI in action. Enter the property information below and instantly generate a persuasive description, ideal for website listings or social media posts.",
-                            h4_1: "Enter Property Details:",
-                            placeholder1: "Property Type (e.g., 3-Bedroom Apartment)",
-                            placeholder2: "Location (e.g., Cascais, near the beach)",
-                            placeholder3: "Features (e.g., modern kitchen, swimming pool, sea view)",
-                            button: "Generate Description",
-                            output_title: "Generated Description:"
-                        }
-                    },
-                    footer: {
-                        text: "Thank you for your time. Let's start building the future of real estate, together.",
-                        subtext: "This guide can be shared as a standalone file for easy access and reference."
-                    }
-                }
-            };
-            
-            function setLanguage(lang) {
-                document.documentElement.lang = lang;
-                const langData = translations[lang];
+        <!-- Slide 3: Gems -->
+        <div id="slide3" class="slide-container justify-start">
+            <div class="w-full">
+                <h1 class="section-title text-3xl sm:text-4xl font-bold mb-4">The Power of Gems: Your Custom AI Agents</h1>
+                <div class="flex space-x-2 mb-8">
+                    <div class="w-24 h-1 blue-bar"></div>
+                    <div class="w-24 h-1 red-bar"></div>
+                    <div class="w-24 h-1 yellow-bar"></div>
+                    <div class="w-24 h-1 green-bar"></div>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-xl transform transition-all duration-300">
+                    <div class="icon-box bg-blue-100 text-blue-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-robot text-4xl"></i></div>
+                    <h3 class="mt-4 text-xl sm:text-2xl font-bold text-gray-800">PortuPrompt Pro</h3>
+                    <p class="mt-2 text-base text-gray-600 text-center">An AI that writes your prompts for you, turning simple ideas into powerful commands.</p>
+                </div>
+                <div class="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-xl transform transition-all duration-300">
+                    <div class="icon-box bg-green-100 text-green-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-gem text-4xl"></i></div>
+                    <h3 class="mt-4 text-xl sm:text-2xl font-bold text-gray-800">JAMES: AI Marketing Expert</h3>
+                    <p class="mt-2 text-base text-gray-600 text-center">A custom Gem that generates branded, compelling property descriptions and marketing copy.</p>
+                </div>
+                <div class="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-xl transform transition-all duration-300">
+                    <div class="icon-box bg-red-100 text-red-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-balance-scale text-4xl"></i></div>
+                    <h3 class="mt-4 text-xl sm:text-2xl font-bold text-gray-800">MY PORTUGAL: Legal Specialist</h3>
+                    <p class="mt-2 text-base text-gray-600 text-center">An assistant that simplifies complex legal concepts, handles documentation, and provides tax insights.</p>
+                </div>
+            </div>
+            <div class="absolute bottom-5 right-8 text-sm text-gray-500">September 5, 2025</div>
+        </div>
 
-                document.querySelectorAll('[data-lang-key]').forEach(el => {
-                    const key = el.dataset.langKey;
-                    const keys = key.split('.');
-                    let text = langData;
-                    keys.forEach(k => {
-                        text = text ? text[k] : `[${key}]`;
-                    });
-                    if (typeof text === 'string') {
-                        el.innerHTML = text;
-                    }
-                });
+        <!-- Slide 4: Productivity -->
+        <div id="slide4" class="slide-container justify-start">
+            <div class="w-full">
+                <h1 class="section-title text-3xl sm:text-4xl font-bold mb-4">Core Productivity: Gmail & Docs</h1>
+                <div class="flex space-x-2 mb-8">
+                    <div class="w-24 h-1 blue-bar"></div>
+                    <div class="w-24 h-1 red-bar"></div>
+                    <div class="w-24 h-1 yellow-bar"></div>
+                    <div class="w-24 h-1 green-bar"></div>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-xl transform transition-all duration-300">
+                    <div class="icon-box bg-blue-100 text-blue-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-envelope text-4xl"></i></div>
+                    <h3 class="mt-4 text-xl sm:text-2xl font-bold text-gray-800">Email Magic</h3>
+                    <p class="mt-2 text-base text-gray-600 text-center">Instantly draft personalized emails with "Help me write" in Gmail.</p>
+                </div>
+                <div class="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-xl transform transition-all duration-300">
+                    <div class="icon-box bg-red-100 text-red-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-file-alt text-4xl"></i></div>
+                    <h3 class="mt-4 text-xl sm:text-2xl font-bold text-gray-800">AI Copywriting</h3>
+                    <p class="mt-2 text-base text-gray-600 text-center">Turn a few bullet points into a compelling listing description in moments.</p>
+                </div>
+            </div>
+            <div class="absolute bottom-5 right-8 text-sm text-gray-500">September 5, 2025</div>
+        </div>
 
-                document.querySelectorAll('[data-lang-list-key]').forEach(el => {
-                    const key = el.dataset.langListKey;
-                    const keys = key.split('.');
-                    let listItems = langData;
-                    keys.forEach(k => {
-                        listItems = listItems ? listItems[k] : [];
-                    });
-                    if (Array.isArray(listItems)) {
-                        el.innerHTML = listItems.map(item => `<li>${item}</li>`).join('');
-                    }
-                });
+        <!-- Slide 5: Calendar -->
+        <div id="slide5" class="slide-container justify-start">
+            <div class="w-full">
+                <h1 class="section-title text-3xl sm:text-4xl font-bold mb-4">Google Calendar: Managing Meetings & Availability</h1>
+                <div class="flex space-x-2 mb-8">
+                    <div class="w-24 h-1 blue-bar"></div>
+                    <div class="w-24 h-1 red-bar"></div>
+                    <div class="w-24 h-1 yellow-bar"></div>
+                    <div class="w-24 h-1 green-bar"></div>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-xl transform transition-all duration-300">
+                    <div class="icon-box bg-blue-100 text-blue-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-calendar-check text-4xl"></i></div>
+                    <h3 class="mt-4 text-xl sm:text-2xl font-bold text-gray-800">Share Your Availability</h3>
+                    <p class="mt-2 text-base text-gray-600 text-center">Let clients book showings directly on your calendar with a simple, automated link.</p>
+                </div>
+                <div class="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-xl transform transition-all duration-300">
+                    <div class="icon-box bg-green-100 text-green-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-building text-4xl"></i></div>
+                    <h3 class="mt-4 text-xl sm:text-2xl font-bold text-gray-800">Book Team Resources</h3>
+                    <p class="mt-2 text-base text-gray-600 text-center">Check real-time availability and book meeting rooms, vehicles, or equipment with a single click.</p>
+                </div>
+            </div>
+            <div class="absolute bottom-5 right-8 text-sm text-gray-500">September 5, 2025</div>
+        </div>
 
-                document.querySelectorAll('[data-lang-placeholder]').forEach(el => {
-                    const key = el.dataset.langPlaceholder;
-                    const keys = key.split('.');
-                    let text = langData;
-                    keys.forEach(k => {
-                        text = text ? text[k] : `[${key}]`;
-                    });
-                    if (typeof text === 'string') {
-                        el.placeholder = text;
-                    }
-                });
-            }
+        <!-- Slide 6: Workflow -->
+        <div id="slide6" class="slide-container justify-start">
+            <div class="w-full">
+                <h1 class="section-title text-3xl sm:text-4xl font-bold mb-4">Google Drive & Tasks: Streamlining Your Workflow</h1>
+                <div class="flex space-x-2 mb-8">
+                    <div class="w-24 h-1 blue-bar"></div>
+                    <div class="w-24 h-1 red-bar"></div>
+                    <div class="w-24 h-1 yellow-bar"></div>
+                    <div class="w-24 h-1 green-bar"></div>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-xl transform transition-all duration-300">
+                    <div class="icon-box bg-blue-100 text-blue-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-folder-open text-4xl"></i></div>
+                    <h3 class="mt-4 text-xl sm:text-2xl font-bold text-gray-800">Instant Document Search</h3>
+                    <p class="mt-2 text-base text-gray-600 text-center">Find any document with natural language queries, no matter its name or location.</p>
+                </div>
+                <div class="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-xl transform transition-all duration-300">
+                    <div class="icon-box bg-green-100 text-green-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-tasks text-4xl"></i></div>
+                    <h3 class="mt-4 text-xl sm:text-2xl font-bold text-gray-800">Automated Task Creation</h3>
+                    <p class="mt-2 text-base text-gray-600 text-center">Turn any email into a to-do item with a single click so you never miss a follow-up.</p>
+                </div>
+            </div>
+            <div class="absolute bottom-5 right-8 text-sm text-gray-500">September 5, 2025</div>
+        </div>
 
-            document.getElementById('pres-lang-pt').addEventListener('click', () => setLanguage('pt'));
-            document.getElementById('pres-lang-en').addEventListener('click', () => setLanguage('en'));
+        <!-- Slide 7: Research -->
+        <div id="slide7" class="slide-container justify-start">
+            <div class="w-full">
+                <h1 class="section-title text-3xl sm:text-4xl font-bold mb-4">NotebookLM: Your Personal Knowledge Hub</h1>
+                <div class="flex space-x-2 mb-8">
+                    <div class="w-24 h-1 blue-bar"></div>
+                    <div class="w-24 h-1 red-bar"></div>
+                    <div class="w-24 h-1 yellow-bar"></div>
+                    <div class="w-24 h-1 green-bar"></div>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-xl transform transition-all duration-300">
+                    <div class="icon-box bg-blue-100 text-blue-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-book-reader text-4xl"></i></div>
+                    <h3 class="mt-4 text-xl sm:text-2xl font-bold text-gray-800">AI-Powered Research</h3>
+                    <p class="mt-2 text-base text-gray-600 text-center">Upload documents and get instant summaries, key facts, and answers in minutes.</p>
+                </div>
+            </div>
+            <div class="absolute bottom-5 right-8 text-sm text-gray-500">September 5, 2025</div>
+        </div>
 
+        <!-- Slide 8: Creative AI -->
+        <div id="slide8" class="slide-container justify-start">
+            <div class="w-full">
+                <h1 class="section-title text-3xl sm:text-4xl font-bold mb-4">Creative AI: Images & Video</h1>
+                <div class="flex space-x-2 mb-8">
+                    <div class="w-24 h-1 blue-bar"></div>
+                    <div class="w-24 h-1 red-bar"></div>
+                    <div class="w-24 h-1 yellow-bar"></div>
+                    <div class="w-24 h-1 green-bar"></div>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-xl transform transition-all duration-300">
+                    <div class="icon-box bg-blue-100 text-blue-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-image text-4xl"></i></div>
+                    <h3 class="mt-4 text-xl sm:text-2xl font-bold text-gray-800">Generate Stunning Visuals</h3>
+                    <p class="mt-2 text-base text-gray-600 text-center">Create photorealistic images for virtual staging and lifestyle shots with simple prompts.</p>
+                </div>
+                <div class="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-xl transform transition-all duration-300">
+                    <div class="icon-box bg-red-100 text-red-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-video text-4xl"></i></div>
+                    <h3 class="mt-4 text-xl sm:text-2xl font-bold text-gray-800">Dynamic Video Tours</h3>
+                    <p class="mt-2 text-base text-gray-600 text-center">Use powerful AI models to generate cinematic video clips for social media and virtual tours.</p>
+                </div>
+            </div>
+            <div class="absolute bottom-5 right-8 text-sm text-gray-500">September 5, 2025</div>
+        </div>
 
-            const cardHeaders = document.querySelectorAll('.card-header');
-            cardHeaders.forEach(header => {
-                header.addEventListener('click', () => {
-                    const cardContent = header.nextElementSibling;
-                    const isExpanded = cardContent.classList.toggle('is-expanded');
-                    if (isExpanded) {
-                        cardContent.style.maxHeight = cardContent.scrollHeight + 'px';
-                    } else {
-                        cardContent.style.maxHeight = '0';
-                    }
-                });
-            });
+        <!-- Slide 9: Nano Banana -->
+        <div id="slide9" class="slide-container justify-start">
+            <div class="w-full">
+                <h1 class="section-title text-3xl sm:text-4xl font-bold mb-4">Go Bananas with Nano Banana! 🍌🍌🍌</h1>
+                <div class="flex space-x-2 mb-8">
+                    <div class="w-24 h-1 blue-bar"></div>
+                    <div class="w-24 h-1 red-bar"></div>
+                    <div class="w-24 h-1 yellow-bar"></div>
+                    <div class="w-24 h-1 green-bar"></div>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-xl transform transition-all duration-300">
+                    <div class="icon-box bg-blue-100 text-blue-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-mobile-alt text-4xl"></i></div>
+                    <h3 class="mt-4 text-xl sm:text-2xl font-bold text-gray-800">Live Virtual Staging on Your Phone</h3>
+                    <p class="mt-2 text-base text-gray-600 text-center">Experience live, on-the-go photo editing with the Gemini app, giving clients an instant vision of a space's potential.</p>
+                </div>
+            </div>
+            <div class="absolute bottom-5 right-8 text-sm text-gray-500">September 5, 2025</div>
+        </div>
+        
+        <!-- Slide 10: Conclusion -->
+        <div id="slide10" class="slide-container justify-center text-center">
+            <div class="space-y-8">
+                <div class="flex justify-center space-x-2">
+                    <div class="w-40 h-1.5 blue-bar"></div>
+                    <div class="w-40 h-1.5 red-bar"></div>
+                    <div class="w-40 h-1.5 yellow-bar"></div>
+                    <div class="w-40 h-1.5 green-bar"></div>
+                </div>
+                <h1 class="title text-4xl sm:text-5xl lg:text-6xl">Ready to transform your workflow?</h1>
+                <p class="subtitle text-base sm:text-lg lg:text-xl max-w-3xl mx-auto">This presentation is just a taste. Join us for the full live event to see these tools in action, get your questions answered by experts, and craft your own AI roadmap. Please bring your laptop for the interactive part of the session.</p>
+            </div>
+            <div class="absolute bottom-5 right-8 text-sm text-gray-500">September 5, 2025</div>
+        </div>
 
-            const nav = document.getElementById('main-nav');
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 100) {
-                    nav.classList.remove('hidden');
-                } else {
-                    nav.classList.add('hidden');
-                }
-            });
-
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    document.querySelector(this.getAttribute('href')).scrollIntoView({
-                        behavior: 'smooth'
-                    });
-                });
-            });
-
-            const showPromptGuideBtn = document.getElementById('show-prompt-guide');
-            const promptGuideSection = document.getElementById('prompt-guide');
-            showPromptGuideBtn.addEventListener('click', () => {
-                const isExpanded = promptGuideSection.classList.toggle('is-expanded');
-                if (isExpanded) {
-                    promptGuideSection.style.maxHeight = promptGuideSection.scrollHeight + 'px';
-                } else {
-                    promptGuideSection.style.maxHeight = '0';
-                }
-                promptGuideSection.scrollIntoView({ behavior: 'smooth' });
-            });
-
-
-            const propTypeInput = document.getElementById('prop-type');
-            const propLocationInput = document.getElementById('prop-location');
-            const propFeaturesInput = document.getElementById('prop-features');
-            const generateDescBtn = document.getElementById('generate-desc');
-            const outputContainer = document.getElementById('output-container');
-            const loadingSpinner = document.getElementById('loading-spinner');
-            const generatedDescription = document.getElementById('generated-description');
-            
-            const updateCardHeight = (cardContent) => {
-                if (cardContent.classList.contains('is-expanded')) {
-                    cardContent.style.maxHeight = cardContent.scrollHeight + 'px';
-                }
-            };
-
-            generateDescBtn.addEventListener('click', async () => {
-                const propType = propTypeInput.value;
-                const propLocation = propLocationInput.value;
-                const propFeatures = propFeaturesInput.value;
-
-                if (!propType || !propLocation || !propFeatures) {
-                    alert('Por favor, preencha todos os campos para gerar a descrição.');
-                    return;
-                }
-
-                outputContainer.classList.remove('hidden');
-                loadingSpinner.style.display = 'block';
-                generatedDescription.innerText = '';
-                generateDescBtn.disabled = true;
-                
-                const cardContent = generateDescBtn.closest('.card-content');
-                updateCardHeight(cardContent);
-
-                // NOTE: A real API key is required for this feature to work.
-                // This is a mock response for demonstration purposes.
-                const apiKey = "";
-
-                if (!apiKey) {
-                    setTimeout(() => {
-                        const mockResponse = `**Apartamento T3 Deslumbrante em ${propLocation}**\n\nDescubra o seu novo lar neste magnífico apartamento T3, perfeitamente localizado na vibrante zona de ${propLocation}. Com um design moderno e acabamentos de alta qualidade, este imóvel é ideal para quem procura conforto e estilo.\n\n**Características:**\n- **${propType}** espaçoso e luminoso\n- Cozinha totalmente equipada com eletrodomésticos de última geração\n- ${propFeatures}\n- Ampla varanda com vista panorâmica\n\nNão perca esta oportunidade única! Agende já a sua visita e venha conhecer a casa dos seus sonhos.`;
-                        generatedDescription.innerText = mockResponse;
-                        loadingSpinner.style.display = 'none';
-                        generateDescBtn.disabled = false;
-                        updateCardHeight(cardContent);
-                    }, 1500);
-                    return;
-                }
-
-                const userPrompt = `Aja como um copywriter de imóveis profissional. Crie uma descrição de anúncio para um imóvel com as seguintes características: \n- Tipo: ${propType}\n- Localização: ${propLocation}\n- Características Principais: ${propFeatures}\nA descrição deve ser persuasiva, destacar os pontos fortes e terminar com uma chamada para a ação para agendar uma visita.`;
-
-                const payload = {
-                    contents: [{ parts: [{ text: userPrompt }] }],
-                };
-                
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`API call failed with status: ${response.status}`);
-                    }
-                    const result = await response.json();
-                    const text = result?.candidates?.[0]?.content?.parts?.[0]?.text || 'Nenhuma descrição foi gerada. Tente com prompts mais específicos.';
-                    generatedDescription.innerText = text;
-                } catch (error) {
-                    console.error('Error fetching data:', error);
-                    generatedDescription.innerText = `Erro ao gerar a descrição. Tente novamente: ${error.message}`;
-                } finally {
-                    loadingSpinner.style.display = 'none';
-                    generateDescBtn.disabled = false;
-                    updateCardHeight(cardContent);
-                }
-            });
-
-
-            const creativePromptInput = document.getElementById('creative-prompt-input');
-            const generateCreativePromptBtn = document.getElementById('generate-creative-prompt');
-            const creativeOutputContainer = document.getElementById('creative-output-container');
-            const creativeLoadingSpinner = document.getElementById('creative-loading-spinner');
-            const generatedCreativePrompt = document.getElementById('generated-creative-prompt');
-            
-            generateCreativePromptBtn.addEventListener('click', async () => {
-                const userIdea = creativePromptInput.value;
-            
-                if (!userIdea) {
-                    alert('Por favor, insira uma ideia para gerar o prompt.');
-                    return;
-                }
-            
-                creativeOutputContainer.classList.remove('hidden');
-                creativeLoadingSpinner.style.display = 'block';
-                generatedCreativePrompt.innerText = '';
-                generateCreativePromptBtn.disabled = true;
-                const cardContent = generateCreativePromptBtn.closest('.card-content');
-                updateCardHeight(cardContent);
-
-                // NOTE: A real API key is required for this feature to work.
-                // This is a mock response for demonstration purposes.
-                const apiKey = "";
-
-                if (!apiKey) {
-                    setTimeout(() => {
-                        const mockResponse = `**Prompt Gerado para: "${userIdea}"**\n\n**Prompt:**\n"Fotografia de um ${userIdea}, estilo cinematográfico, luz suave do entardecer, com uma profundidade de campo que destaca os detalhes. A imagem deve ser ultra-realista, com uma resolução de 8K e uma paleta de cores quentes e convidativas. --ar 16:9"\n\n**Prompt Negativo:**\n"desfocado, baixa resolução, ruído, desorganizado, cores frias"`;
-                        generatedCreativePrompt.innerText = mockResponse;
-                        creativeLoadingSpinner.style.display = 'none';
-                        generateCreativePromptBtn.disabled = false;
-                        updateCardHeight(cardContent);
-                    }, 1500);
-                    return;
-                }
-            
-                const userPrompt = `Aja como um engenheiro de prompts de IA especializado em geração de imagens para o mercado imobiliário. A sua tarefa é converter uma ideia simples numa prompt detalhada e otimizada para ferramentas como o Midjourney ou DALL-E, com um foco em fotorrealismo e estética profissional. A prompt deve ser concisa, mas incluir detalhes sobre iluminação, ângulo da câmara, estilo, e elementos-chave para realçar a qualidade do imóvel. Inclua também uma secção de 'Negative Prompts' para garantir um resultado mais limpo e profissional.\n\nExemplo de Prompt a gerar: "Cinematic shot of a modern living room in a luxury villa, sunny afternoon, golden hour light, large windows showing a view of the garden with a swimming pool. Interior design by a professional architect. High detail, photorealistic. --ar 16:9"\n\n"Negative Prompts: blurry, low-resolution, out of focus, messy, cluttered"\n\nIdeia do utilizador: "${userIdea}"`;
-
-                const payload = {
-                    contents: [{ parts: [{ text: userPrompt }] }],
-                };
-                
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-            
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                    
-                    if (!response.ok) {
-                        throw new Error(`API call failed with status: ${response.status}`);
-                    }
-                    const result = await response.json();
-                    const text = result?.candidates?.[0]?.content?.parts?.[0]?.text || 'Nenhum prompt foi gerado. Tente com prompts mais específicos.';
-                    generatedCreativePrompt.innerText = text;
-                } catch (error) {
-                    console.error('Error fetching data:', error);
-                    generatedCreativePrompt.innerText = `Erro ao gerar o prompt. Tente novamente: ${error.message}`;
-                } finally {
-                    creativeLoadingSpinner.style.display = 'none';
-                    generateCreativePromptBtn.disabled = false;
-                    updateCardHeight(cardContent);
-                }
-            });
-
-        });
-    </script>
+    </div>
 </body>
 </html>
