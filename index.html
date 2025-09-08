@@ -1010,6 +1010,21 @@
                 generatedDescription.innerText = '';
                 generateDescBtn.disabled = true;
 
+                // NOTE: A real API key is required for this feature to work.
+                // This is a mock response for demonstration purposes.
+                const apiKey = "";
+
+                if (!apiKey) {
+                    setTimeout(() => {
+                        const mockResponse = `**Apartamento T3 Deslumbrante em ${propLocation}**\n\nDescubra o seu novo lar neste magnífico apartamento T3, perfeitamente localizado na vibrante zona de ${propLocation}. Com um design moderno e acabamentos de alta qualidade, este imóvel é ideal para quem procura conforto e estilo.\n\n**Características:**\n- **${propType}** espaçoso e luminoso\n- Cozinha totalmente equipada com eletrodomésticos de última geração\n- ${propFeatures}\n- Ampla varanda com vista panorâmica\n\nNão perca esta oportunidade única! Agende já a sua visita e venha conhecer a casa dos seus sonhos.`;
+                        generatedDescription.innerText = mockResponse;
+                        loadingSpinner.style.display = 'none';
+                        generateDescBtn.disabled = false;
+                        updateCardHeight(generateDescBtn.closest('.card-content'));
+                    }, 1500);
+                    return;
+                }
+
                 const userPrompt = `Aja como um copywriter de imóveis profissional. Crie uma descrição de anúncio para um imóvel com as seguintes características:
 - Tipo: ${propType}
 - Localização: ${propLocation}
@@ -1020,7 +1035,7 @@ A descrição deve ser persuasiva, destacar os pontos fortes e terminar com uma 
                 const payload = {
                     contents: [{ parts: [{ text: userPrompt }] }],
                 };
-                const apiKey = "";
+
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
                 let retries = 0;
@@ -1078,6 +1093,21 @@ A descrição deve ser persuasiva, destacar os pontos fortes e terminar com uma 
                 creativeLoadingSpinner.style.display = 'block';
                 generatedCreativePrompt.innerText = '';
                 generateCreativePromptBtn.disabled = true;
+
+                // NOTE: A real API key is required for this feature to work.
+                // This is a mock response for demonstration purposes.
+                const apiKey = "";
+
+                if (!apiKey) {
+                    setTimeout(() => {
+                        const mockResponse = `**Prompt Gerado para: "${userIdea}"**\n\n**Prompt:**\n"Fotografia de um ${userIdea}, estilo cinematográfico, luz suave do entardecer, com uma profundidade de campo que destaca os detalhes. A imagem deve ser ultra-realista, com uma resolução de 8K e uma paleta de cores quentes e convidativas. --ar 16:9"\n\n**Prompt Negativo:**\n"desfocado, baixa resolução, ruído, desorganizado, cores frias"`;
+                        generatedCreativePrompt.innerText = mockResponse;
+                        creativeLoadingSpinner.style.display = 'none';
+                        generateCreativePromptBtn.disabled = false;
+                        updateCardHeight(generateCreativePromptBtn.closest('.card-content'));
+                    }, 1500);
+                    return;
+                }
             
                 const userPrompt = `Aja como um engenheiro de prompts de IA especializado em geração de imagens para o mercado imobiliário. A sua tarefa é converter uma ideia simples numa prompt detalhada e otimizada para ferramentas como o Midjourney ou DALL-E, com um foco em fotorrealismo e estética profissional. A prompt deve ser concisa, mas incluir detalhes sobre iluminação, ângulo da câmara, estilo, e elementos-chave para realçar a qualidade do imóvel. Inclua também uma secção de 'Negative Prompts' para garantir um resultado mais limpo e profissional.
 
@@ -1090,7 +1120,7 @@ Ideia do utilizador: "${userIdea}"`;
                 const payload = {
                     contents: [{ parts: [{ text: userPrompt }] }],
                 };
-                const apiKey = "";
+
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
             
                 let retries = 0;
