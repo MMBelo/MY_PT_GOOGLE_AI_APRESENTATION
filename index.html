@@ -1,404 +1,772 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8"/>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your AI Co-pilot for Real Estate</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Poppins:wght@400;500;700&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet"/>
+    <title>AI & Google Workspace for Real Estate</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f0f2f5;
-            color: #3c4043;
-            line-height: 1.6;
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            color: #2D3748;
         }
-        .presentation-container {
-            display: flex;
-            flex-direction: column;
-            gap: 2.5rem;
+        .google-color-bar {
+            height: 4px;
+            width: 100px;
+            margin-bottom: 24px;
         }
-        .slide-container {
-            width: 100%;
-            max-width: 1280px;
-            min-height: 720px;
-            padding: 2.5rem;
-            margin: 0 auto;
-            background-color: #ffffff;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            border-radius: 1rem;
+        .blue-bg { background-color: #4285F4; }
+        .red-bg { background-color: #DB4437; }
+        .yellow-bg { background-color: #F4B400; }
+        .green-bg { background-color: #0F9D58; }
+        .card-container {
+            transition: all 0.3s ease-in-out;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .card-container:last-child {
+            border-bottom: none;
+        }
+        .card-header {
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-header:hover {
+            background-color: #F7FAFC;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1-px rgba(0, 0, 0, 0.06);
+        }
+        .card-content {
+            max-height: 0;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative;
+            transition: max-height 0.5s ease-in-out;
         }
-        @media (max-width: 1280px) {
-            .slide-container {
-                width: 90%;
-            }
+        .card-content.is-expanded {
+            max-height: 4000px;
         }
-        @media (max-width: 768px) {
-            .slide-container {
-                min-height: auto;
-                padding: 1.5rem;
-            }
+        .arrow-icon {
+            transition: transform 0.3s ease;
         }
-        .title {
-            font-family: 'Poppins', sans-serif;
-            font-size: 3.5rem;
-            font-weight: 700;
-            color: #202124;
+        .is-expanded .arrow-icon {
+            transform: rotate(180deg);
         }
-        .subtitle {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.6rem;
-            font-weight: 400;
-            color: #5f6368;
+        .fixed-nav {
+            transform: translateY(0);
+            transition: transform 0.3s ease;
         }
-        .section-title {
-            font-family: 'Poppins', sans-serif;
-            font-size: 3rem;
-            font-weight: 700;
-            color: #202124;
+        .fixed-nav.hidden {
+            transform: translateY(-100%);
         }
-        .section-subtitle {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.5rem;
-            font-weight: 400;
-            color: #5f6368;
+        .prompt-guide-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.7s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .blue-bar { background-color: #4285F4; }
-        .red-bar { background-color: #DB4437; }
-        .yellow-bar { background-color: #F4B400; }
-        .green-bar { background-color: #0F9D58; }
-        .icon-box {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 80px;
-            height: 80px;
+        .prompt-guide-container.is-expanded {
+            max-height: 4000px;
+        }
+        .prompt-title-underline {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 4px;
+            background-color: #4285F4;
+            margin-top: 8px;
+            margin-bottom: 24px;
+            border-radius: 2px;
+        }
+        .extra-tool-card {
+            background-color: white;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
         }
-        .icon-box:hover {
-            transform: translateY(-5px) scale(1.1);
+        .extra-tool-card:hover {
+            transform: translateY(-5px);
             box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-        }
-        .icon-box i {
-            font-size: 2.25rem;
-        }
-        .icon-box-sm {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-        }
-        .icon-box-sm i {
-            font-size: 1.5rem;
-        }
-        .content-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 2rem;
-            align-items: start;
-        }
-        @media (min-width: 768px) {
-            .content-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
         }
     </style>
 </head>
-<body>
+<body class="antialiased">
 
-    <div class="presentation-container">
-
-        <!-- Slide 1: Cover -->
-        <div id="slide1" class="slide-container text-center justify-center">
-            <div class="space-y-8">
-                <div class="flex justify-center space-x-2">
-                    <div class="w-40 h-1.5 blue-bar"></div>
-                    <div class="w-40 h-1.5 red-bar"></div>
-                    <div class="w-40 h-1.5 yellow-bar"></div>
-                    <div class="w-40 h-1.5 green-bar"></div>
-                </div>
-                <h1 class="title text-4xl sm:text-5xl lg:text-6xl">Your AI Co-pilot for Real Estate</h1>
-                <p class="subtitle text-base sm:text-lg lg:text-xl max-w-3xl mx-auto">Get ready for an exclusive live demonstration on how to use Google's most powerful AI tools to revolutionize your business. From personalized client communications to stunning property visuals, we'll show you how to work smarter, not harder.</p>
-                <div class="flex justify-center flex-wrap gap-8 sm:gap-12 lg:gap-20 mt-12">
-                    <div class="flex flex-col items-center">
-                        <div class="icon-box ai-icon bg-blue-100 text-blue-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-brain text-4xl"></i></div>
-                        <span class="mt-4 text-sm sm:text-base font-medium">AI Assistant</span>
-                    </div>
-                    <div class="flex flex-col items-center">
-                        <div class="icon-box property-icon bg-green-100 text-green-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-home text-4xl"></i></div>
-                        <span class="mt-4 text-sm sm:text-base font-medium">Real Estate</span>
-                    </div>
-                    <div class="flex flex-col items-center">
-                        <div class="icon-box docs-icon bg-red-100 text-red-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-file-alt text-4xl"></i></div>
-                        <span class="mt-4 text-sm sm:text-base font-medium">Smart Documents</span>
-                    </div>
-                </div>
+    <nav id="main-nav" class="fixed-nav hidden bg-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-3 flex items-center justify-between">
+            <a href="#intro" class="font-bold text-gray-800 text-sm md:text-md"><img src="https://i.imgur.com/qBGE6YT.jpg" alt="Company Logo" class="h-8"></a>
+            <div class="flex-grow flex justify-end space-x-4">
+                <a href="#ai-studio" class="text-sm md:text-md font-medium text-gray-600 hover:text-gray-900 transition-colors duration-300">Custom Tools</a>
+                <a href="#core-tools" class="text-sm md:text-md font-medium text-gray-600 hover:text-gray-900 transition-colors duration-300">Productivity</a>
+                <a href="#calendar" class="text-sm md:text-md font-medium text-gray-600 hover:text-gray-900 transition-colors duration-300">Calendar</a>
+                <a href="#drive-tasks" class="text-sm md:text-md font-medium text-gray-600 hover:text-gray-900 transition-colors duration-300">Workflow</a>
+                <a href="#notebooklm" class="text-sm md:text-md font-medium text-gray-600 hover:text-gray-900 transition-colors duration-300">Research</a>
+                <a href="#creative-ai" class="text-sm md:text-md font-medium text-gray-600 hover:text-gray-900 transition-colors duration-300">Creativity</a>
+                <a href="#nanobanana" class="text-sm md:text-md font-medium text-gray-600 hover:text-gray-900 transition-colors duration-300">Go Bananas</a>
             </div>
-            <div class="absolute bottom-5 right-8 text-sm text-gray-500">September 5, 2025</div>
         </div>
+    </nav>
 
-        <!-- Slide 2: Agenda -->
-        <div id="slide2" class="slide-container justify-start">
-            <div class="w-full">
-                <h1 class="section-title text-4xl sm:text-5xl font-bold mb-4">Agenda</h1>
-                <div class="flex space-x-2 mb-8">
-                    <div class="w-24 h-1 blue-bar"></div>
-                    <div class="w-24 h-1 red-bar"></div>
-                    <div class="w-24 h-1 yellow-bar"></div>
-                    <div class="w-24 h-1 green-bar"></div>
+    <header id="intro" class="bg-white shadow-md py-16 md:py-24 text-center">
+        <div class="container mx-auto px-6">
+            <div class="flex justify-center mb-4 space-x-2">
+                <div class="google-color-bar blue-bg"></div>
+                <div class="google-color-bar red-bg"></div>
+                <div class="google-color-bar yellow-bg"></div>
+                <div class="google-color-bar green-bg"></div>
+            </div>
+            <img src="https://i.imgur.com/qBGE6YT.jpg" alt="Company Logo" class="h-24 md:h-32 mx-auto mb-6">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-gray-800 leading-tight">Your AI Co-pilot for Real Estate</h1>
+            <p class="mt-4 md:mt-6 text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">Discover how to use Google's most powerful AI tools to elevate your business, from drafting emails to generating stunning property visuals.</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-8 md:py-16">
+        <section id="ai-studio" class="mb-12">
+            <div class="flex items-center mb-4">
+                <div class="google-color-bar blue-bg"></div>
+                <div class="google-color-bar red-bg"></div>
+                <div class="google-color-bar yellow-bg"></div>
+                <div class="google-color-bar green-bg"></div>
+            </div>
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-8 pb-2">1. The Power of Gems: Your Custom AI Agents</h2>
+            <p class="text-gray-600 mb-8">Gems are specialized AI assistants you can create and train to perform specific, repetitive tasks. For real estate, this means having a personal expert for copywriting, legal documents, or anything else your team needs. This is where AI goes from a general tool to a tailored, branded asset for your business.</p>
+
+            <div class="space-y-6">
+                <div class="card-container bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="card-header p-6 flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-2xl">💡</span>
+                            <h3 class="font-semibold text-lg md:text-xl text-gray-800">Meet PortuPrompt Pro v2.0: Your Prompt Engineering Expert</h3>
+                        </div>
+                        <span class="arrow-icon text-gray-500">▼</span>
+                    </div>
+                    <div class="card-content p-6">
+                        <p class="text-gray-600 mb-4">"PortuPrompt Pro v2.0" is a world-class AI assistant specialized in the Portuguese real estate market. Its primary mission is to take your simple requests and instantly convert them into detailed, structured, and ready-to-use C.R.A.F.T. prompts, and then execute them to show the expected result.</p>
+                        
+                        <h4 class="font-medium text-gray-700 mb-2">Methodology: C.R.A.F.T.</h4>
+                        <p class="text-gray-600 mb-4">PortuPrompt Pro v2.0 uses the **C.R.A.F.T. methodology** to build better prompts. When you give it a simple request, it will assume the missing information and provide a complete, executable prompt. **Any assumptions made will be stated.**</p>
+                        <ul class="list-disc list-inside text-gray-600 space-y-2 pl-4 mb-4">
+                            <li>**C - Context:** The property, client, or market situation.</li>
+                            <li>**R - Role:** The persona you or the AI should adopt.</li>
+                            <li>**A - Action:** The specific task to be done.</li>
+                            <li>**F - Format:** The desired structure of the output.</li>
+                            <li>**T - Target:** The specific audience for the output.</li>
+                        </ul>
+                        
+                        <h4 class="font-medium text-gray-700 mb-2">Example Interaction:</h4>
+                        <div class="bg-gray-100 p-4 rounded-lg italic text-gray-700 mb-4">
+                            <p class="mb-2">**My Request:** "I need a social media post for a new T2 in Alfama. It's for young buyers."</p>
+                            <p class="mb-2">**PortuPrompt Pro's Response:**</p>
+                            <p class="text-gray-600">"Understood. Here is the perfect C.R.A.F.T. prompt for your request, along with the output it generates.
+                                <br>**[Assumption]:** I will assume the property has been recently renovated to appeal to a younger demographic.</p>
+                            <h5 class="font-bold text-gray-800 mt-2">Part 1: The Perfect Prompt</h5>
+                            <blockquote class="my-2 p-3 border-l-4 border-gray-400 bg-white italic text-sm">
+                                "Role: Act as a trendy social media manager for a modern real estate agency. Action: Write an engaging Instagram post caption. Context: The property is a newly listed, renovated T2 apartment in the historic and vibrant Alfama district of Lisbon. It combines traditional charm with modern amenities. Target: Young professionals and couples (25-35 years old) looking for their first home in an authentic, lively neighborhood. The tone should be energetic, cool, and aspirational. Format: A short, catchy caption with 3-4 relevant emojis and a list of 5-7 popular hashtags."
+                            </blockquote>
+                            <h5 class="font-bold text-gray-800 mt-2">Part 2: The Generated Output</h5>
+                            <p class="text-gray-600">"Living history, modern style! ✨ Your dream Alfama life starts here. This stunning, newly renovated 2-bedroom apartment is your ticket to living in Lisbon's most soulful neighborhood. Imagine waking up to the sounds of Fado and walking to the city's best cafes. 🇵🇹 Ready to call this home? DM us for a private viewing! 🔑 #AlfamaLiving #LisbonRealEstate #PrimeiroImovel #InvestInLisbon #LisbonApartment #PortugalHome"</p>
+                        </div>
+                         <h4 class="font-medium text-gray-700 mb-2">Instructions for Building this Gem:</h4>
+                        <ol class="list-decimal list-inside text-gray-600 space-y-2 pl-4 mb-4">
+                            <li>Go to <a href="https://gemini.google.com/app" target="_blank" class="text-blue-600 hover:underline">Google Gemini</a> and navigate to "Create a Gem."</li>
+                            <li>Use the following prompt to define your new AI agent's persona and mission.</li>
+                        </ol>
+                        <blockquote class="my-2 p-3 border-l-4 border-gray-300 bg-gray-50 italic">"**PERSONA ACTIVATION: PortuPrompt Pro v2.0**<br/><br/>**1. ROLE & IDENTITY:**<br/>You are "PortuPrompt Pro v2.0," a world-class AI assistant specialized in the Portuguese real estate market. Your expertise is transforming simple ideas into perfectly engineered prompts.<br/><br/>**2. CORE MISSION:**<br/>Your primary mission is to take my simple requests and instantly convert them into detailed, structured, and ready-to-use C.R.A.F.T. prompts. You will then immediately execute that prompt to show me the expected result. The goal is to provide me with a final, copy-pasteable prompt and a preview of its output.<br/><br/>**3. METHODOLOGY & ASSUMPTIONS:**<br/>You will structure your output based on the C.R.A.F.T. methodology (Context, Role, Action, Format, Target). For any information I don't provide, you will use your expert knowledge of the Portuguese real estate market to make logical assumptions. You MUST state any key assumptions you make.<br/><br/>**4. OUTPUT PROTOCOL:**<br/>Your response MUST always have two distinct parts:<br/><br/>**Part 1: The Perfect Prompt.**<br/>You will generate the complete, detailed C.R.A.F.T. prompt inside a code block for easy copying.<br/><br/>**Part 2: The Generated Output.**<br/>Immediately after the prompt, you will execute it and provide the result (e.g., the property description, the email, the list of ideas).<br/><br/>**5. INITIATION:**<br/>To confirm you have understood and activated this persona, please start your first response with: \"PortuPrompt Pro v2.0 is active. Give me your idea, and I will generate the perfect prompt and its output.\""</blockquote>
+                        <p class="text-gray-600 mt-4">You can use this Google Drive document as a knowledge base to help your Gem learn: <a href="https://docs.google.com/document/d/10CkATjF8JMeWrcREfvjN-l_4nMd-dWN74bnCAMqw5kI/edit?tab=t.0" target="_blank" class="text-blue-600 hover:underline">Link to Knowledge Base</a></p>
+                    </div>
+                </div>
+                <div class="card-container bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="card-header p-6 flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-2xl">💎</span>
+                            <h3 class="font-semibold text-lg md:text-xl text-gray-800">Meet JAMES: Your Marketing & Copy Expert</h3>
+                        </div>
+                        <span class="arrow-icon text-gray-500">▼</span>
+                    </div>
+                    <div class="card-content p-6">
+                        <p class="text-gray-600 mb-4">A custom Gem can be trained on your specific writing style to consistently generate high-quality listing descriptions with just a few details. This is your personal, branded AI assistant.</p>
+                         <h4 class="font-medium text-gray-700 mb-2">Instructions for Building this Gem:</h4>
+                        <ol class="list-decimal list-inside text-gray-600 space-y-2 pl-4 mb-4">
+                            <li>Go to <a href="https://gemini.google.com/app" target="_blank" class="text-blue-600 hover:underline">Google Gemini</a> and navigate to "Create a Gem."</li>
+                            <li>Use the following prompt to define your new AI agent's persona and mission.</li>
+                        </ol>
+                        <blockquote class="my-2 p-3 border-l-4 border-gray-300 bg-gray-50 italic">"Hello, I am JAMES - AI Real Estate Optimizer, a highly specialized AI assistant in real estate marketing. My mission is to create descriptions and promotion strategies that not only sell properties but also tell their story and connect directly with the right target audience. I have access to a brand style guide, real estate copywriting best practices, prompt guides for generative AI, target audience profiles, and image ratio strategies. I use all this knowledge to help you optimize property promotion. My core functionality is to detect the language of your query and respond in the same language. If a response includes a property description, I will provide the English version first, followed by the Portuguese version. My Capabilities: 1. Copy (Text) Optimization: Creation & Analysis: Based on data like location, price, property type, and target audience, I create persuasive and detailed descriptions. My text is adapted for different platforms (website, social media, email marketing) and audiences (families, investors, couples, etc.). Review & Improvement: I can analyze the text of an existing listing and suggest changes to make it more appealing, highlighting specific aspects of the location, proximity to key services (schools, hospitals, shopping centers), transportation, and points of interest relevant to the target audience. 2. Image Optimization: Image Analysis: I can analyze the images of a listing and provide constructive feedback. I'll suggest which images to use as the cover, the ideal order of photos, and identify weak points (poor lighting, elements to remove, etc.). Generative AI Suggestions: To improve images, I can give you step-by-step instructions and the exact prompts to use tools like Google Imagen 3 or Nano Banana, or others. I will give instructions on the best image ratio (e.g., \"generate an image in a 9:16 ratio for Instagram Stories\"). I can also generate prompts to create renders of rooms or add virtual elements (like furniture, decor, landscaping) to bring a vacant space to life. Instructions for Interaction: To ensure I can help you in the best way, please provide me with the following information clearly: Objetivo: What do you need my help with? (e.g., Create new copy, Optimize an existing one, or Request image suggestions). Property Data: Property Type: (e.g., T3 Apartment, V4 House) Location: (e.g., Cascais, near Quinta da Marinha) Price: (e.g., 850,000€) Key Features: (e.g., swimming pool, sea view, garden, fireplace) Target Audience: (e.g., Young family, investor, retired couple) Additional Information (optional): You can provide a link to the listing, a text draft, or images you want me to analyze. I am here to be your right-hand in property promotion. Let's optimize every listing to reach its maximum potential."</blockquote>
+                         <p class="text-gray-600 mt-4">You can use this Google Drive document as a knowledge base to help your Gem learn: <a href="https://docs.google.com/document/d/1MoZzwqN5vim7Z2I0MhHt35Sf7jI6oe9gzUYInUdbhE8/edit?usp=sharing" target="_blank" class="text-blue-600 hover:underline">Link to Knowledge Base</a></p>
+                    </div>
+                </div>
+
+                 <div class="card-container bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="card-header p-6 flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-2xl">⚖️</span>
+                            <h3 class="font-semibold text-lg md:text-xl text-gray-800">Conheça o MY PORTUGAL: O Seu Especialista em Legal & Docs</h3>
+                        </div>
+                        <span class="arrow-icon text-gray-500">▼</span>
+                    </div>
+                    <div class="card-content p-6">
+                        <p class="text-gray-600 mb-4">This specialized Gem supports your team in all the administrative and legal aspects of a transaction, ensuring a smooth and secure process.</p>
+                         <h4 class="font-medium text-gray-700 mb-2">Instructions for Building this Gem:</h4>
+                        <ol class="list-decimal list-inside text-gray-600 space-y-2 pl-4 mb-4">
+                            <li>Go to <a href="https://gemini.google.com/app" target="_blank" class="text-blue-600 hover:underline">Google Gemini</a> and create a new Gem.</li>
+                            <li>Use the following prompt to define your new AI legal expert.</li>
+                        </ol>
+                        <blockquote class="my-2 p-3 border-l-4 border-gray-300 bg-gray-50 italic">"Olá, eu sou o My Portugal - Especialista em Legal & Docs, um assistente de IA altamente especializado em documentação, legislação e finanças imobiliárias em Portugal. A minha função é apoiar a sua equipa na gestão de toda a burocracia, garantindo que os nossos processos são eficientes, legais e transparentes. Tenho um conhecimento aprofundado de: Legislação imobiliária portuguesa atual. Impostos, taxas e custos associados à compra, venda e arrendamento de imóveis. Acrónimos e terminologia técnica do mercado imobiliário português. Modelos de documentos legais e administrativos utilizados pela My Portugal. A minha funcionalidade principal é detetar o idioma da sua consulta e responder no mesmo idioma. As Minhas Capacidades: 1. Gestão e Análise de Documentos: Revisão de Documentos: Posso analisar rascunhos, contratos e outros documentos legais para identificar erros, omissões ou cláusulas que possam ser problemáticas para os nossos clientes. Preenchimento de Documentos: Com base em dados do cliente ou do imóvel, posso ajudar no preenchimento correto de documentos necessários para a transação. Solicitação de Documentos: Posso criar modelos de comunicação para solicitar a documentação necessária aos clientes ou a outras entidades, explicando a finalidade de cada documento. 2. Consultoria Jurídica e Fiscal: Explicação de Conceitos: Posso explicar conceitos jurídicos complexos de forma clara e simples (por exemplo, o que são uma Certidão de Teor, Caderneta Predial, Licença de Utilização, etc., são). Informação sobre Impostos e Taxas: Forneço informações detalhadas sobre impostos como IMT, IMI, Imposto de Selo e impostos sobre mais-valias. Processo de Financiamento: Posso oferecer orientação geral sobre como os clientes podem obter financiamento, explicando as diferentes fases do processo e a documentação necessária. Instruções para Interação: Para garantir que o posso ajudar da melhor forma, por favor, forneça-me as seguintes informações de forma clara: Objetivo: Em que precisa da minha ajuda? (por exemplo, Revisão de contrato, Informação sobre IMT, Lista de documentos para uma compra, Explicação do acrónimo CPCV). Contexto Específico (se aplicável): Tipo de Transação: (por exemplo, Compra, Venda, Arrendamento) Dados do Imóvel/Cliente: (por exemplo, localização, tipo de imóvel, valor, nome do cliente) Documento a Analisar: Se tiver um documento, pode anexá-lo ou fornecer os seus pontos-chave para análise. Estou aqui para ser a sua "biblioteca" legal e administrativa. Conte comigo para qualquer questão que tenha e para garantir que o processo é o mais suave e seguro possível."</blockquote>
+                    </div>
                 </div>
             </div>
-            <div class="flex flex-col lg:flex-row w-full flex-grow">
-                <div class="w-full lg:w-1/2 pr-0 lg:pr-10">
-                    <ul class="space-y-6">
-                        <li class="flex items-start">
-                            <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex justify-center items-center font-bold mr-4 flex-shrink-0">1</div>
-                            <div class="text-xl font-medium pt-0.5">The Power of Gems: Your Custom AI Agents</div>
-                        </li>
-                        <li class="flex items-start">
-                            <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex justify-center items-center font-bold mr-4 flex-shrink-0">2</div>
-                            <div class="text-xl font-medium pt-0.5">Core Productivity: Gmail &amp; Docs</div>
-                        </li>
-                        <li class="flex items-start">
-                            <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex justify-center items-center font-bold mr-4 flex-shrink-0">3</div>
-                            <div class="text-xl font-medium pt-0.5">Google Calendar: Managing Meetings & Availability</div>
-                        </li>
-                        <li class="flex items-start">
-                            <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex justify-center items-center font-bold mr-4 flex-shrink-0">4</div>
-                            <div class="text-xl font-medium pt-0.5">Google Drive &amp; Tasks: Streamlining Your Workflow</div>
-                        </li>
-                        <li class="flex items-start">
-                            <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex justify-center items-center font-bold mr-4 flex-shrink-0">5</div>
-                            <div class="text-xl font-medium pt-0.5">NotebookLM: Your Personal Knowledge Hub</div>
-                        </li>
-                        <li class="flex items-start">
-                            <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex justify-center items-center font-bold mr-4 flex-shrink-0">6</div>
-                            <div class="text-xl font-medium pt-0.5">Creative AI: Images &amp; Video</div>
-                        </li>
-                        <li class="flex items-start">
-                            <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex justify-center items-center font-bold mr-4 flex-shrink-0">7</div>
-                            <div class="text-xl font-medium pt-0.5">Go Bananas with Nano Banana! 🍌🍌🍌</div>
-                        </li>
-                        <li class="flex items-start">
-                            <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex justify-center items-center font-bold mr-4 flex-shrink-0">8</div>
-                            <div class="text-xl font-medium pt-0.5">Q&A and Next Steps</div>
-                        </li>
-                    </ul>
+        </section>
+
+        <section id="core-tools" class="mb-12">
+            <div class="flex items-center mb-4">
+                <div class="google-color-bar blue-bg"></div>
+                <div class="google-color-bar red-bg"></div>
+                <div class="google-color-bar yellow-bg"></div>
+                <div class="google-color-bar green-bg"></div>
+            </div>
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-8 pb-2">2. Core Productivity: Gmail & Docs</h2>
+            <p class="text-gray-600 mb-8">This section focuses on using AI to automate and streamline your daily communication and document creation, saving you countless hours. These tools are your first line of defense against repetitive tasks, allowing you to focus on client relationships.</p>
+
+            <div class="space-y-6">
+                <div class="card-container bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="card-header p-6 flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-2xl">📧</span>
+                            <h3 class="font-semibold text-lg md:text-xl text-gray-800">Scenario: Draft Client Emails in Seconds</h3>
+                        </div>
+                        <span class="arrow-icon text-gray-500">▼</span>
+                    </div>
+                    <div class="card-content p-6">
+                        <p class="text-gray-600 mb-4">Use the "Help me write" feature in Gmail to draft personalized emails instantly. This is perfect for following up on a showing, confirming details with a client, or sending a quick update.</p>
+                        <h4 class="font-medium text-gray-700 mb-2">Step-by-Step Scenario:</h4>
+                        <ol class="list-decimal list-inside text-gray-600 space-y-2 pl-4">
+                            <li>Open a new email in Gmail.</li>
+                            <li>Click the **"Help me write"** button (pencil icon) in the bottom right.</li>
+                            <li>Enter a prompt like:
+                                <blockquote class="my-2 p-3 border-l-4 border-gray-300 bg-gray-50 italic">"Draft a follow-up email to a client named Sarah after her showing at 123 Main Street. Thank her for her time and ask if she has any questions or would like to schedule a second viewing."</blockquote>
+                            </li>
+                            <li>Review the AI-generated draft. You can then click **"Refine"** to make it more formal, shorter, or add more details.</li>
+                            <li>Personalize the final email with a personal touch before sending.</li>
+                        </ol>
+                    </div>
                 </div>
-                <div class="hidden lg:flex w-1/2 justify-center items-center relative">
-                    <div class="w-96 h-96 rounded-full bg-gray-100 flex justify-center items-center">
-                        <div class="w-48 h-48 rounded-full bg-white shadow-xl flex justify-center items-center">
-                            <i class="fab fa-google text-7xl text-blue-500"></i>
+                
+                <div class="card-container bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="card-header p-6 flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-2xl">📝</span>
+                            <h3 class="font-semibold text-lg md:text-xl text-gray-800">Scenario: Write a Property Description</h3>
+                        </div>
+                        <span class="arrow-icon text-gray-500">▼</span>
+                    </div>
+                    <div class="card-content p-6">
+                        <p class="text-gray-600 mb-4">Struggling with writer's block for a new listing? Let AI in Google Docs help you draft a compelling description based on the property's key features.</p>
+                        <h4 class="font-medium text-gray-700 mb-2">Step-by-Step Scenario:</h4>
+                        <ol class="list-decimal list-inside text-gray-600 space-y-2 pl-4">
+                            <li>Open a new document in Google Docs.</li>
+                            <li>Click on **"Help me write"** (pencil icon).</li>
+                            <li>Enter a prompt like:
+                                <blockquote class="my-2 p-3 border-l-4 border-gray-300 bg-gray-50 italic">"Draft a captivating property description for a 3-bedroom, 2-bathroom home located at 123 Main Street with an open floor plan, a newly renovated kitchen, and a large backyard with a patio. Focus on attracting young families."</blockquote>
+                            </li>
+                            <li>The AI will generate a starting draft. You can then easily edit and customize it to match your style and highlight specific details.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="calendar" class="mb-12">
+            <div class="flex items-center mb-4">
+                <div class="google-color-bar blue-bg"></div>
+                <div class="google-color-bar red-bg"></div>
+                <div class="google-color-bar yellow-bg"></div>
+                <div class="google-color-bar green-bg"></div>
+            </div>
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-8 pb-2">3. Google Calendar: Managing Meetings & Availability</h2>
+            <p class="text-gray-600 mb-8">Google Calendar isn't just an agenda; it's a productivity tool you can use to streamline scheduling with clients and manage your team's internal organization, avoiding conflicts and saving time.</p>
+
+            <div class="space-y-6">
+                <div class="card-container bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="card-header p-6 flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-2xl">📆</span>
+                            <h3 class="font-semibold text-lg md:text-xl text-gray-800">Scenario: Share Your Availability with Clients</h3>
+                        </div>
+                        <span class="arrow-icon text-gray-500">▼</span>
+                    </div>
+                    <div class="card-content p-6">
+                        <p class="text-gray-600 mb-4">Save time on emails and phone calls. Send a link with your availability so clients can schedule showings and meetings directly on your calendar.</p>
+                        <h4 class="font-medium text-gray-700 mb-2">Step-by-Step Scenario:</h4>
+                        <ol class="list-decimal list-inside text-gray-600 space-y-2 pl-4">
+                            <li>Go to Google Calendar and create an **Appointment Schedule**.</li>
+                            <li>Define the days and times you are available for showings or meetings.</li>
+                            <li>Copy the generated link and share it with the client via email or message.</li>
+                            <li>The client clicks the link, sees your open time slots, and books the best one for them. The booking is automatically added to your calendar.</li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="card-container bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="card-header p-6 flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-2xl">🏢</span>
+                            <h3 class="font-semibold text-lg md:text-xl text-gray-800">Scenario: Book a Meeting Room</h3>
+                        </div>
+                        <span class="arrow-icon text-gray-500">▼</span>
+                    </div>
+                    <div class="card-content p-6">
+                        <p class="text-gray-600 mb-4">Avoid conflicts and ensure your team's resources are always available. You can use Google Calendar to book meeting rooms, vehicles, or equipment.</p>
+                        <h4 class="font-medium text-gray-700 mb-2">Step-by-Step Scenario:</h4>
+                        <ol class="list-decimal list-inside text-gray-600 space-y-2 pl-4">
+                            <li>Create a new event in Google Calendar.</li>
+                            <li>Invite team members and add the meeting information.</li>
+                            <li>Click on **"Add rooms, etc."** to see the availability of your company's resources.</li>
+                            <li>Select the meeting room or resource you want to book. The Calendar will automatically show if the resource is available at your requested time.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="drive-tasks" class="mb-12">
+            <div class="flex items-center mb-4">
+                <div class="google-color-bar blue-bg"></div>
+                <div class="google-color-bar red-bg"></div>
+                <div class="google-color-bar yellow-bg"></div>
+                <div class="google-color-bar green-bg"></div>
+            </div>
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-8 pb-2">4. Google Drive & Tasks: Streamlining Your Workflow</h2>
+            <p class="text-gray-600 mb-8">This section focuses on using AI to automate and streamline your daily communication and document creation, saving you countless hours. These tools are your first line of defense against repetitive tasks, allowing you to focus on client relationships.</p>
+
+            <div class="space-y-6">
+                <div class="card-container bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="card-header p-6 flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-2xl">📂</span>
+                            <h3 class="font-semibold text-lg md:text-xl text-gray-800">Scenario: Find a Contract or Document Instantly</h3>
+                        </div>
+                        <span class="arrow-icon text-gray-500">▼</span>
+                    </div>
+                    <div class="card-content p-6">
+                        <p class="text-gray-600 mb-4">No more endless searching through folders. AI-powered search in Google Drive allows you to find any document, even if you don't remember its exact name, using simple natural language.</p>
+                        <h4 class="font-medium text-gray-700 mb-2">Step-by-Step Scenario:</h4>
+                        <ol class="list-decimal list-inside text-gray-600 space-y-2 pl-4">
+                            <li>Open Google Drive in your browser.</li>
+                            <li>In the search bar, provide a natural language prompt like:
+                                <blockquote class="my-2 p-3 border-l-4 border-gray-300 bg-gray-50 italic">"Show me the latest signed contract for the property on 'Rua das Oliveiras'" or "Find all client proposals from last quarter."</blockquote>
+                            </li>
+                            <li>Google Drive’s AI will understand the context and bring up the most relevant files, regardless of their file name or location.</li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="card-container bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="card-header p-6 flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-2xl">✅</span>
+                            <h3 class="font-semibold text-lg md:text-xl text-gray-800">Scenario: Automate Task Creation from Emails</h3>
+                        </div>
+                        <span class="arrow-icon text-gray-500">▼</span>
+                    </div>
+                    <div class="card-content p-6">
+                        <p class="text-gray-600 mb-4">Never forget a client request or a follow-up action. With Google Tasks integration in Gmail, you can turn any email into a to-do item in a single click.</p>
+                        <h4 class="font-medium text-gray-700 mb-2">Step-by-Step Scenario:</h4>
+                        <ol class="list-decimal list-inside text-gray-600 space-y-2 pl-4">
+                            <li>Open an email from a client in Gmail (e.g., a request to schedule a new showing).</li>
+                            <li>Click the **Tasks** icon in the right-hand sidebar.</li>
+                            <li>A new task will be created automatically with the email subject and a direct link to the email.</li>
+                            <li>You can then add a due date, priority, and notes to the task, ensuring the client's request is not forgotten.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="notebooklm" class="mb-12">
+            <div class="flex items-center mb-4">
+                <div class="google-color-bar blue-bg"></div>
+                <div class="google-color-bar red-bg"></div>
+                <div class="google-color-bar yellow-bg"></div>
+                <div class="google-color-bar green-bg"></div>
+            </div>
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-8 pb-2">5. NotebookLM: Your Personal Knowledge Hub</h2>
+            <p class="text-gray-600 mb-8">NotebookLM acts as a research assistant, allowing you to upload and get instant summaries, key insights, and answers from your most important documents—from lengthy market reports to legal contracts. It's a game-changer for preparing for client meetings or briefings.</p>
+
+            <div class="space-y-6">
+                <div class="card-container bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="card-header p-6 flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-2xl">📖</span>
+                            <h3 class="font-semibold text-lg md:text-xl text-gray-800">Scenario: Get Ready for a Client Meeting</h3>
+                        </div>
+                        <span class="arrow-icon text-gray-500">▼</span>
+                    </div>
+                    <div class="card-content p-6">
+                        <p class="text-gray-600 mb-4">Need to quickly review all key information about a property or a client before a meeting? Use NotebookLM to get instant, AI-generated summaries from your uploaded documents.</p>
+                        <h4 class="font-medium text-gray-700 mb-2">Step-by-Step Scenario:</h4>
+                        <ol class="list-decimal list-inside text-gray-600 space-y-2 pl-4">
+                            <li>Go to <a href="https://notebooklm.google.com/" target="_blank" class="text-blue-600 hover:underline">NotebookLM</a> and create a new notebook.</li>
+                            <li>Upload source documents like the property's Caderneta Predial, a long-form market analysis report, or a client's past correspondence.</li>
+                            <li>Ask NotebookLM questions like:
+                                <blockquote class="my-2 p-3 border-l-4 border-gray-300 bg-gray-50 italic">"Summarize the key market trends in the Cascais area from this report." or "What are the key clauses of the purchase agreement for this property?"</blockquote>
+                            </li>
+                            <li>Use the instant, concise answers to create a meeting brief or prepare your talking points.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="creative-ai" class="mb-12">
+            <div class="flex items-center mb-4">
+                <div class="google-color-bar blue-bg"></div>
+                <div class="google-color-bar red-bg"></div>
+                <div class="google-color-bar yellow-bg"></div>
+                <div class="google-color-bar green-bg"></div>
+            </div>
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-8 pb-2">6. Creative AI: Images & Video</h2>
+            <p class="text-gray-600 mb-8">Move beyond stock photos. These tools allow you to generate unique, eye-catching visuals for social media, marketing materials, or client presentations, giving your listings a professional and memorable look.</p>
+
+            <div class="space-y-6">
+                <div class="card-container bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="card-header p-6 flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-2xl">🖼️✨</span>
+                            <h3 class="font-semibold text-lg md:text-xl text-gray-800">Static Demo: Image Prompt Generator</h3>
+                        </div>
+                        <span class="arrow-icon text-gray-500">▼</span>
+                    </div>
+                    <div class="card-content p-6">
+                        <p class="text-gray-600 mb-4">Want to create a stunning visual but don't know how to describe it? Use AI to generate a detailed, high-quality prompt that can be used in image generation tools like Midjourney, DALL-E, or Gemini. Below is an example of an optimized prompt and the expected outcome.</p>
+                        <div class="bg-gray-100 p-6 rounded-lg shadow-inner">
+                            <h4 class="font-medium text-gray-700 mb-2">Creative Prompt Example:</h4>
+                            <blockquote class="my-2 p-3 border-l-4 border-gray-400 bg-white italic text-sm">
+                                "Act as an AI prompt engineer specializing in real estate image generation. Your task is to convert a simple idea into a detailed, optimized prompt for tools like Midjourney or DALL-E, focusing on photorealism and a professional aesthetic. The prompt should be concise but include details about lighting, camera angle, style, and key elements to enhance the property's quality. Also, include a 'Negative Prompts' section for a cleaner, more professional result.<br><br>Example of Prompt to be generated:<br>\"Cinematic shot of a modern living room in a luxury villa, sunny afternoon, golden hour light, large windows showing a view of the garden with a swimming pool. Interior design by a professional architect. High detail, photorealistic. --ar 16:9\"<br>\"Negative Prompts: blurry, low-resolution, out of focus, messy, cluttered\"<br><br>User idea: \"virtual tour in Aroeira, family dining in Cascais\""
+                            </blockquote>
                         </div>
                     </div>
-                    <div class="absolute top-10 left-1/2 -translate-x-1/2 w-20 h-20 rounded-full bg-blue-100 flex justify-center items-center shadow-md text-blue-500"><i class="fas fa-brain text-3xl"></i></div>
-                    <div class="absolute top-1/4 left-10 w-20 h-20 rounded-full bg-green-100 flex justify-center items-center shadow-md text-green-600"><i class="fas fa-home text-3xl"></i></div>
-                    <div class="absolute bottom-1/4 left-20 w-20 h-20 rounded-full bg-yellow-100 flex justify-center items-center shadow-md text-yellow-500"><i class="fas fa-chart-line text-3xl"></i></div>
-                    <div class="absolute top-1/4 right-10 w-20 h-20 rounded-full bg-red-100 flex justify-center items-center shadow-md text-red-500"><i class="fas fa-file-alt text-3xl"></i></div>
-                    <div class="absolute bottom-1/4 right-20 w-20 h-20 rounded-full bg-gray-100 flex justify-center items-center shadow-md text-gray-600"><i class="fas fa-mobile-alt text-3xl"></i></div>
+                </div>
+                
+                <div class="card-container bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="card-header p-6 flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-2xl">🖼️</span>
+                            <h3 class="font-semibold text-lg md:text-xl text-gray-800">Scenario: Generate Stunning Property Visuals</h3>
+                        </div>
+                        <span class="arrow-icon text-gray-500">▼</span>
+                    </div>
+                    <div class="card-content p-6">
+                        <p class="text-gray-600 mb-4">Generate lifestyle images that a listing's real photos may not capture, such as a cozy evening scene or a vibrant backyard party. You can use this for social media posts or even for virtual staging.</p>
+                        <h4 class="font-medium text-gray-700 mb-2">Step-by-Step Scenario:</h4>
+                        <ol class="list-decimal list-inside text-gray-600 space-y-2 pl-4">
+                            <li>Go to <a href="https://gemini.google.com/app" target="_blank" class="text-blue-600 hover:underline">Gemini</a> and navigate to the image generation feature.</li>
+                            <li>Enter a descriptive prompt like:
+                                <blockquote class="my-2 p-3 border-l-4 border-gray-300 bg-gray-50 italic">"Generate a photorealistic image of a stylish, young couple enjoying a glass of wine on a modern, sun-drenched apartment balcony, with a city skyline view at sunset."</blockquote>
+                            </li>
+                            <li>Generate and download the images. Remember to use these to complement real listing photos, not replace them.</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="card-container bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="card-header p-6 flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-2xl">🎬</span>
+                            <h3 class="font-semibold text-lg md:text-xl text-gray-800">Scenario: Create an Animated Virtual Tour</h3>
+                        </div>
+                        <span class="arrow-icon text-gray-500">▼</span>
+                    </div>
+                    <div class="card-content p-6">
+                        <p class="text-gray-600 mb-4">Use Google's advanced video models like **Veo** or **Imagen 3 Video** to create short, dynamic clips for a property. These can be used for social media, email campaigns, or quick virtual tours to capture attention immediately.</p>
+                        <h4 class="font-medium text-gray-700 mb-2">Step-by-Step Scenario:</h4>
+                        <ol class="list-decimal list-inside text-gray-600 space-y-2 pl-4">
+                            <li>Go to <a href="https://aistudio.google.com/gen-media" target="_blank" class="text-blue-600 hover:underline">Google AI Studio (Generative Media)</a>.</li>
+                            <li>Enter a descriptive prompt below. You can try these two options to create different types of videos.</li>
+                        </ol>
+                        <h5 class="font-medium text-gray-700 mt-4 mb-1">Opção 1: O Plano Cinematográfico com Drone</h5>
+                        <p class="text-gray-600 mb-2">Este prompt cria um vídeo profissional de alto impacto para redes sociais.</p>
+                        <div class="mb-4">
+                            <blockquote class="my-2 p-3 border-l-4 border-gray-300 bg-gray-50 italic">
+                                <strong class="text-gray-800">Prompt Positivo:</strong> "A smooth, cinematic drone shot panning over a modern two-story home, then a quick cut to a bright living room with large windows, and finally a shot of a family relaxing in the garden."
+                            </blockquote>
+                            <blockquote class="my-2 p-3 border-l-4 border-gray-300 bg-gray-50 italic">
+                                <strong class="text-gray-800">Prompt Negativo:</strong> "blurry, shaky, low-quality, bad lighting, cluttered, poor resolution, dark"
+                            </blockquote>
+                        </div>
+                        <h5 class="font-medium text-gray-700 mt-4 mb-1">Opção 2: O Percurso Virtual de Staging</h5>
+                        <p class="text-gray-600 mb-2">Este prompt é excelente para dar vida a um espaço vazio, perfeito para tours virtuais.</p>
+                        <div class="mb-4">
+                            <blockquote class="my-2 p-3 border-l-4 border-gray-300 bg-gray-50 italic">
+                                <strong class="text-gray-800">Prompt Positivo:</strong> "A smooth, first-person walkthrough video of a modern, empty living room with an open floor plan. Gradually, elegant furniture, art, and stylish decor appear, bringing the space to life. The final shot shows a furnished, inviting space."
+                            </blockquote>
+                            <blockquote class="my-2 p-3 border-l-4 border-gray-300 bg-gray-50 italic">
+                                <strong class="text-gray-800">Prompt Negativo:</strong> "clutter, outdated furniture, messy, unnatural colors, weird proportions, poor rendering, low-quality"
+                            </blockquote>
+                        </div>
+                        <p class="text-gray-600 mt-4">Generating these clips can save you the time and cost of professional video production for simple promotional content.</p>
+                    </div>
                 </div>
             </div>
-            <div class="absolute bottom-5 right-8 text-sm text-gray-500">September 5, 2025</div>
+        </section>
+
+        <section id="nanobanana" class="mb-12">
+            <div class="flex items-center mb-4">
+                <div class="google-color-bar blue-bg"></div>
+                <div class="google-color-bar red-bg"></div>
+                <div class="google-color-bar yellow-bg"></div>
+                <div class="google-color-bar green-bg"></div>
+            </div>
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-8 pb-2">7. Go Bananas with Nano Banana! 🍌🍌🍌</h2>
+            <p class="text-gray-600 mb-8">This is the grand finale. The **nano banana** model is a small, powerful AI that runs directly on your mobile device. This means you can get instant, on-the-go results for tasks like live photo editing. Let's see it in action with a live demonstration using the Gemini mobile app.</p>
+
+            <div class="space-y-6">
+                <div class="card-container bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="card-header p-6 flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-2xl">📱</span>
+                            <h3 class="font-semibold text-lg md:text-xl text-gray-800">Scenario: Live Virtual Staging on Your Phone</h3>
+                        </div>
+                        <span class="arrow-icon text-gray-500">▼</span>
+                    </div>
+                    <div class="card-content p-6">
+                        <p class="text-gray-600 mb-4">Imagine you're at a showing, and a client is hesitant about a vacant room. With the Gemini app on your phone, you can instantly give them a vision of the space's potential by adding furniture virtually, live and in person.</p>
+                        <h4 class="font-medium text-gray-700 mb-2">Step-by-Step Scenario (Live Demo):</h4>
+                        <ol class="list-decimal list-inside text-gray-600 space-y-2 pl-4">
+                            <li>Open the **Gemini app** on your mobile phone.</li>
+                            <li>Take a photo of a vacant room or an area you want to enhance.</li>
+                            <li>Write or say your prompt directly below the photo. For example:</li>
+                            <li>Use one of the following prompts to showcase the live editing capabilities:
+                                <blockquote class="my-2 p-3 border-l-4 border-gray-300 bg-gray-50 italic">
+                                    "Add modern, minimalist furniture to this living room."
+                                </blockquote>
+                                <blockquote class="my-2 p-3 border-l-4 border-gray-300 bg-gray-50 italic">
+                                    "Add elegant furniture to this bedroom, brighten the light, and remove the desordem."
+                                </blockquote>
+                            </li>
+                            <li>Show the audience the image generated on your phone. This demonstrates the speed and power of AI for quick, impactful, and on-the-go tasks.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="more-tools" class="mt-16">
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-8 pb-2">🎁 A few more great AI tools if you like to explore</h2>
+            <p class="text-gray-600 mb-8">
+                <span class="font-bold text-red-600">Note:</span> Do not use these tools with sensitive information.
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Agentic -->
+                <div class="extra-tool-card p-6 flex flex-col items-center text-center">
+                    <div class="text-4xl mb-4 text-blue-500">🤖</div>
+                    <h3 class="font-bold text-lg text-gray-800 mb-2">Agentic</h3>
+                    <div class="space-y-4 w-full">
+                        <div class="flex flex-col items-center">
+                            <a href="https://www.genspark.ai/" target="_blank" class="text-blue-600 hover:underline font-semibold text-base mb-1">Genspark</a>
+                            <p class="text-sm text-gray-600">Creates complete articles or web pages from a single prompt.</p>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <a href="https://manus.im/app" target="_blank" class="text-blue-600 hover:underline font-semibold text-base mb-1">Manus</a>
+                            <p class="text-sm text-gray-600">A powerful AI-powered note-taking and knowledge management tool.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Image -->
+                <div class="extra-tool-card p-6 flex flex-col items-center text-center">
+                    <div class="text-4xl mb-4 text-green-500">🎨</div>
+                    <h3 class="font-bold text-lg text-gray-800 mb-2">Image</h3>
+                    <div class="space-y-4 w-full">
+                        <div class="flex flex-col items-center">
+                            <a href="https://app.leonardo.ai/" target="_blank" class="text-blue-600 hover:underline font-semibold text-base mb-1">Leonardo AI</a>
+                            <p class="text-sm text-gray-600">A generative AI platform for creating stunning game assets, art, and visuals.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Other LLMs -->
+                <div class="extra-tool-card p-6 flex flex-col items-center text-center">
+                    <div class="text-4xl mb-4 text-yellow-500">🧠</div>
+                    <h3 class="font-bold text-lg text-gray-800 mb-2">Other LLMs</h3>
+                    <div class="space-y-4 w-full">
+                        <div class="flex flex-col items-center">
+                            <a href="https://claude.ai" target="_blank" class="text-blue-600 hover:underline font-semibold text-base mb-1">Claude</a>
+                            <p class="text-sm text-gray-600">A large language model known for its conversational and text-processing abilities.</p>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <a href="https://grok.com/" target="_blank" class="text-blue-600 hover:underline font-semibold text-base mb-1">Grok</a>
+                            <p class="text-sm text-gray-600">An AI chatbot with a unique and witty personality, with real-time knowledge.</p>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <a href="https://chat.deepseek.com/" target="_blank" class="text-blue-600 hover:underline font-semibold text-base mb-1">Deepseek</a>
+                            <p class="text-sm text-gray-600">A conversational AI model with a focus on code generation and detailed explanations.</p>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <a href="https://www.kimi.com/" target="_blank" class="text-blue-600 hover:underline font-semibold text-base mb-1">Kimi</a>
+                            <p class="text-sm text-gray-600">Specialized in summarizing long documents and extracting key information efficiently.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Presentation -->
+                <div class="extra-tool-card p-6 flex flex-col items-center text-center">
+                    <div class="text-4xl mb-4 text-red-500">📊</div>
+                    <h3 class="font-bold text-lg text-gray-800 mb-2">Presentation</h3>
+                    <div class="space-y-4 w-full">
+                        <div class="flex flex-col items-center">
+                            <a href="https://www.gamma.app/" target="_blank" class="text-blue-600 hover:underline font-semibold text-base mb-1">Gamma</a>
+                            <p class="text-sm text-gray-600">An AI-powered tool for creating beautiful presentations and documents in seconds.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mt-16 text-center">
+             <button id="show-prompt-guide" class="inline-flex items-center px-8 py-4 text-white bg-blue-600 rounded-full font-bold text-lg hover:bg-blue-700 transition-colors duration-300 shadow-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13.5M3.25 12h17.5M12 6.253a6.75 6.75 0 110 13.5m0-13.5a6.75 6.75 0 100 13.5m-6.75 0a6.75 6.75 0 110 13.5M6.25 12h11.5M12 6.253a6.75 6.75 0 110 13.5m0-13.5a6.75 6.75 0 100 13.5m-6.75 0a6.75 6.75 0 110 13.5"/>
+                </svg>
+                <span id="prompt-guide-btn-text">Go to Prompt Engineering Guide</span>
+            </button>
+        </section>
+
+        <div id="prompt-guide" class="prompt-guide-container mt-16">
+            
+            <div class="px-6 py-8">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Prompt Engineering Guide for Real Estate Professionals</h2>
+                <div class="prompt-title-underline"></div>
+                <p class="text-gray-600 mb-8">
+                    Mastering the art of writing prompts is the key to getting the most out of AI tools. Use this guide as a reference to achieve the best results in all your tasks, from content creation to image generation. Remember, the more specific your request, the better the response.
+                </p>
+
+                <h3 class="font-bold text-xl text-gray-800 mt-12 mb-4">Best Practices: The Fail-Proof Formula</h3>
+                <ul class="list-disc list-inside text-gray-600 space-y-2">
+                    <li>**Target Audience:** Start your prompt by describing the audience. (e.g., "For a young family...")</li>
+                    <li>**Clear Task:** Define exactly what you want. (e.g., "Write a property description.")</li>
+                    <li>**Essential Data:** Include all relevant property data. (e.g., "3-bed, Cascais, €400,000, sea view...")</li>
+                    <li>**Tone and Style:** Specify the tone (formal, enthusiastic, professional). (e.g., "In a warm and welcoming tone.")</li>
+                    <li>**Constraints (Negative Prompt):** Indicate what you do not want included. (e.g., "Do not include technical jargon.")</li>
+                </ul>
+
+                <h3 class="font-bold text-xl text-gray-800 mt-12 mb-4">Marketing & Copywriting</h3>
+                <p class="text-gray-600 mb-4">Transform property features into stories that sell. Use prompts to create persuasive descriptions, social media posts, or ad copy.</p>
+                <div class="bg-gray-100 p-6 rounded-lg shadow-inner">
+                    <p class="font-semibold text-gray-800">Example Prompt 1: Property Description</p>
+                    <blockquote class="my-2 p-3 border-l-4 border-gray-400 bg-white italic text-sm">
+                        "Write an ad description for a 3-bedroom apartment in Oeiras. The target audience is young families. Key features: renovated kitchen, private garden, close to schools and parks. The tone should be welcoming and highlight quality of life. Add a call to action to schedule a visit."
+                    </blockquote>
+                    <p class="font-semibold text-gray-800 mt-4">Example Prompt 2: Instagram Post</p>
+                    <blockquote class="my-2 p-3 border-l-4 border-gray-400 bg-white italic text-sm">
+                        "Create an Instagram post about a 2-bedroom apartment in Cascais for investors. Focus on its proximity to the city center, rental potential, and return on investment. Use concise language, emojis, and relevant hashtags (#RealEstateInvestment #Cascais)."
+                    </blockquote>
+                </div>
+
+                <h3 class="font-bold text-xl text-gray-800 mt-12 mb-4">Image Generation (Prompt-to-Image)</h3>
+                <p class="text-gray-600 mb-4">Bring empty spaces to life or create lifestyle visuals that capture buyers' imagination. The prompts below help generate photorealistic images for virtual staging or marketing.</p>
+                <div class="bg-gray-100 p-6 rounded-lg shadow-inner">
+                    <p class="font-semibold text-gray-800">Example Prompt 1: Virtual Staging</p>
+                    <blockquote class="my-2 p-3 border-l-4 border-gray-400 bg-white italic text-sm">
+                        "Create a photorealistic image of a vacant living room in a 3-bedroom apartment in Lisbon, with a minimalist Scandinavian design style. Include a grey sofa, a wooden coffee table, and a tall plant in the corner. Focus on the natural light coming in from the large window."
+                    </blockquote>
+                    <p class="font-semibold text-gray-800 mt-4">Example Prompt 2: Lifestyle</p>
+                    <blockquote class="my-2 p-3 border-l-4 border-gray-400 bg-white italic text-sm">
+                        "Generate an image of a young Portuguese family enjoying a barbecue in the garden of a villa in Quinta da Marinha. The scene is in the late afternoon with soft sunlight, and details should include an elegant garden design and an infinity pool. Photorealistic."
+                    </blockquote>
+                </div>
+
+                <h3 class="font-bold text-xl text-gray-800 mt-12 mb-4">Image Generation (Image-to-Image)</h3>
+                <p class="text-gray-600 mb-4">Transform an existing property photo by changing lighting, adding elements, or adjusting the style. This is ideal for quick demonstrations or improving photos that aren't perfect.</p>
+                <div class="bg-gray-100 p-6 rounded-lg shadow-inner">
+                    <p class="font-semibold text-gray-800">Example Prompt 1: Change Daylight</p>
+                    <blockquote class="my-2 p-3 border-l-4 border-gray-400 bg-white italic text-sm">
+                        "Based on this exterior photo of a property taken during the day, transform the image to show a cozy evening atmosphere. Add soft lights in the garden and turn on the interior lights to show an inviting ambiance. Photorealistic style."
+                    </blockquote>
+                    <p class="font-semibold text-gray-800 mt-4">Example Prompt 2: Add Decor</p>
+                    <blockquote class="my-2 p-3 border-l-4 border-gray-400 bg-white italic text-sm">
+                        "Based on this photo of an empty living room, add minimalist and contemporary furniture and decor. Place a grey sectional sofa, a glass coffee table, and a soft rug. The image should look photorealistic and move-in ready."
+                    </blockquote>
+                </div>
+
+                <h3 class="font-bold text-xl text-gray-800 mt-12 mb-4">Video Generation (Prompt-to-Video)</h3>
+                <p class="text-gray-600 mb-4">Create property trailers or dynamic clips for social media. Describe the action, setting, and filming style to get the best result.</p>
+                <div class="bg-gray-100 p-6 rounded-lg shadow-inner">
+                    <p class="font-semibold text-gray-800">Example Prompt 1: Villa Virtual Tour</p>
+                    <blockquote class="my-2 p-3 border-l-4 border-gray-400 bg-white italic text-sm">
+                        "Create a video that follows a smooth, 'first-person' walkthrough of a modern three-bedroom villa in Aroeira. The camera starts in the living room, moves to the kitchen, down the hallway, and ends in the garden with the swimming pool. The lighting is natural and soft."
+                    </blockquote>
+                    <p class="font-semibold text-gray-800 mt-4">Example Prompt 2: Dynamic Property Ad</p>
+                    <blockquote class="my-2 p-3 border-l-4 border-gray-400 bg-white italic text-sm">
+                        "A dynamic video with quick cuts that showcases the best features of a 1-bedroom apartment in Chiado, Lisbon. Interior shots of the living room and bedroom are interspersed with shots of the street and nearby landmarks. The vibe is urban, sophisticated, and fast-paced."
+                    </blockquote>
+                </div>
+                
+                <h3 class="font-bold text-xl text-gray-800 mt-12 mb-4">Video Generation (Image-to-Video)</h3>
+                <p class="text-gray-600 mb-4">Turn a static property photo into a short, dynamic video. Add subtle movement to bring the image to life and capture the attention of social media or email marketing audiences.</p>
+                <div class="bg-gray-100 p-6 rounded-lg shadow-inner">
+                    <p class="font-semibold text-gray-800">Example Prompt 1: Villa with a Pool</p>
+                    <blockquote class="my-2 p-3 border-l-4 border-gray-400 bg-white italic text-sm">
+                        "Based on this photo of a villa with a pool. Add movement to the pool water and make the breeze sway the trees. The camera slowly zooms into the center of the villa, focused on the main door. Photorealistic style."
+                    </blockquote>
+                    <p class="font-semibold text-gray-800 mt-4">Example Prompt 2: Sea View</p>
+                    <blockquote class="my-2 p-3 border-l-4 border-gray-400 bg-white italic text-sm">
+                        "Based on this photo of a balcony with a sea view. Add movement to the waves, make the clouds move slowly, and make the sun glint. The camera moves slightly, giving it a video-like feel. Photorealistic style."
+                    </blockquote>
+                </div>
+            </div>
         </div>
 
-        <!-- Slide 3: Gems -->
-        <div id="slide3" class="slide-container justify-start">
-            <div class="w-full">
-                <h1 class="section-title text-3xl sm:text-4xl font-bold mb-4">The Power of Gems: Your Custom AI Agents</h1>
-                <div class="flex space-x-2 mb-8">
-                    <div class="w-24 h-1 blue-bar"></div>
-                    <div class="w-24 h-1 red-bar"></div>
-                    <div class="w-24 h-1 yellow-bar"></div>
-                    <div class="w-24 h-1 green-bar"></div>
-                </div>
-            </div>
-            <div class="content-grid">
-                <div class="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-xl transform transition-all duration-300">
-                    <div class="icon-box bg-blue-100 text-blue-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-robot text-4xl"></i></div>
-                    <h3 class="mt-4 text-xl sm:text-2xl font-bold text-gray-800">PortuPrompt Pro</h3>
-                    <p class="mt-2 text-base text-gray-600 text-center">An AI that writes your prompts for you, turning simple ideas into powerful commands.</p>
-                </div>
-                <div class="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-xl transform transition-all duration-300">
-                    <div class="icon-box bg-green-100 text-green-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-gem text-4xl"></i></div>
-                    <h3 class="mt-4 text-xl sm:text-2xl font-bold text-gray-800">JAMES: AI Marketing Expert</h3>
-                    <p class="mt-2 text-base text-gray-600 text-center">A custom Gem that generates branded, compelling property descriptions and marketing copy.</p>
-                </div>
-                <div class="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-xl transform transition-all duration-300">
-                    <div class="icon-box bg-red-100 text-red-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-balance-scale text-4xl"></i></div>
-                    <h3 class="mt-4 text-xl sm:text-2xl font-bold text-gray-800">MY PORTUGAL: Legal Specialist</h3>
-                    <p class="mt-2 text-base text-gray-600 text-center">An assistant that simplifies complex legal concepts, handles documentation, and provides tax insights.</p>
-                </div>
-            </div>
-            <div class="absolute bottom-5 right-8 text-sm text-gray-500">September 5, 2025</div>
-        </div>
+    </main>
 
-        <!-- Slide 4: Productivity -->
-        <div id="slide4" class="slide-container justify-start">
-            <div class="w-full">
-                <h1 class="section-title text-3xl sm:text-4xl font-bold mb-4">Core Productivity: Gmail & Docs</h1>
-                <div class="flex space-x-2 mb-8">
-                    <div class="w-24 h-1 blue-bar"></div>
-                    <div class="w-24 h-1 red-bar"></div>
-                    <div class="w-24 h-1 yellow-bar"></div>
-                    <div class="w-24 h-1 green-bar"></div>
-                </div>
-            </div>
-            <div class="content-grid">
-                <div class="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-xl transform transition-all duration-300">
-                    <div class="icon-box bg-blue-100 text-blue-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-envelope text-4xl"></i></div>
-                    <h3 class="mt-4 text-xl sm:text-2xl font-bold text-gray-800">Email Magic</h3>
-                    <p class="mt-2 text-base text-gray-600 text-center">Instantly draft personalized emails with "Help me write" in Gmail.</p>
-                </div>
-                <div class="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-xl transform transition-all duration-300">
-                    <div class="icon-box bg-red-100 text-red-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-file-alt text-4xl"></i></div>
-                    <h3 class="mt-4 text-xl sm:text-2xl font-bold text-gray-800">AI Copywriting</h3>
-                    <p class="mt-2 text-base text-gray-600 text-center">Turn a few bullet points into a compelling listing description in moments.</p>
-                </div>
-            </div>
-            <div class="absolute bottom-5 right-8 text-sm text-gray-500">September 5, 2025</div>
+    <footer class="mt-16 py-8 bg-gray-800 text-white text-center">
+        <div class="container mx-auto px-6">
+            <p class="text-sm font-semibold">Thank you for your time. Let's start building the future of real estate, together.</p>
+            <p class="mt-2 text-xs text-gray-400">This guide can be shared as a standalone file for easy access and reference.</p>
         </div>
+    </footer>
 
-        <!-- Slide 5: Calendar -->
-        <div id="slide5" class="slide-container justify-start">
-            <div class="w-full">
-                <h1 class="section-title text-3xl sm:text-4xl font-bold mb-4">Google Calendar: Managing Meetings & Availability</h1>
-                <div class="flex space-x-2 mb-8">
-                    <div class="w-24 h-1 blue-bar"></div>
-                    <div class="w-24 h-1 red-bar"></div>
-                    <div class="w-24 h-1 yellow-bar"></div>
-                    <div class="w-24 h-1 green-bar"></div>
-                </div>
-            </div>
-            <div class="content-grid">
-                <div class="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-xl transform transition-all duration-300">
-                    <div class="icon-box bg-blue-100 text-blue-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-calendar-check text-4xl"></i></div>
-                    <h3 class="mt-4 text-xl sm:text-2xl font-bold text-gray-800">Share Your Availability</h3>
-                    <p class="mt-2 text-base text-gray-600 text-center">Let clients book showings directly on your calendar with a simple, automated link.</p>
-                </div>
-                <div class="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-xl transform transition-all duration-300">
-                    <div class="icon-box bg-green-100 text-green-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-building text-4xl"></i></div>
-                    <h3 class="mt-4 text-xl sm:text-2xl font-bold text-gray-800">Book Team Resources</h3>
-                    <p class="mt-2 text-base text-gray-600 text-center">Check real-time availability and book meeting rooms, vehicles, or equipment with a single click.</p>
-                </div>
-            </div>
-            <div class="absolute bottom-5 right-8 text-sm text-gray-500">September 5, 2025</div>
-        </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cardHeaders = document.querySelectorAll('.card-header');
+            cardHeaders.forEach(header => {
+                header.addEventListener('click', () => {
+                    const cardContent = header.nextElementSibling;
+                    const isExpanded = cardContent.classList.toggle('is-expanded');
+                    if (isExpanded) {
+                        cardContent.style.maxHeight = cardContent.scrollHeight + 'px';
+                    } else {
+                        cardContent.style.maxHeight = '0';
+                    }
+                });
+            });
 
-        <!-- Slide 6: Workflow -->
-        <div id="slide6" class="slide-container justify-start">
-            <div class="w-full">
-                <h1 class="section-title text-3xl sm:text-4xl font-bold mb-4">Google Drive & Tasks: Streamlining Your Workflow</h1>
-                <div class="flex space-x-2 mb-8">
-                    <div class="w-24 h-1 blue-bar"></div>
-                    <div class="w-24 h-1 red-bar"></div>
-                    <div class="w-24 h-1 yellow-bar"></div>
-                    <div class="w-24 h-1 green-bar"></div>
-                </div>
-            </div>
-            <div class="content-grid">
-                <div class="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-xl transform transition-all duration-300">
-                    <div class="icon-box bg-blue-100 text-blue-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-folder-open text-4xl"></i></div>
-                    <h3 class="mt-4 text-xl sm:text-2xl font-bold text-gray-800">Instant Document Search</h3>
-                    <p class="mt-2 text-base text-gray-600 text-center">Find any document with natural language queries, no matter its name or location.</p>
-                </div>
-                <div class="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-xl transform transition-all duration-300">
-                    <div class="icon-box bg-green-100 text-green-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-tasks text-4xl"></i></div>
-                    <h3 class="mt-4 text-xl sm:text-2xl font-bold text-gray-800">Automated Task Creation</h3>
-                    <p class="mt-2 text-base text-gray-600 text-center">Turn any email into a to-do item with a single click so you never miss a follow-up.</p>
-                </div>
-            </div>
-            <div class="absolute bottom-5 right-8 text-sm text-gray-500">September 5, 2025</div>
-        </div>
+            const nav = document.getElementById('main-nav');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 100) {
+                    nav.classList.remove('hidden');
+                } else {
+                    nav.classList.add('hidden');
+                }
+            });
 
-        <!-- Slide 7: Research -->
-        <div id="slide7" class="slide-container justify-start">
-            <div class="w-full">
-                <h1 class="section-title text-3xl sm:text-4xl font-bold mb-4">NotebookLM: Your Personal Knowledge Hub</h1>
-                <div class="flex space-x-2 mb-8">
-                    <div class="w-24 h-1 blue-bar"></div>
-                    <div class="w-24 h-1 red-bar"></div>
-                    <div class="w-24 h-1 yellow-bar"></div>
-                    <div class="w-24 h-1 green-bar"></div>
-                </div>
-            </div>
-            <div class="content-grid">
-                <div class="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-xl transform transition-all duration-300">
-                    <div class="icon-box bg-blue-100 text-blue-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-book-reader text-4xl"></i></div>
-                    <h3 class="mt-4 text-xl sm:text-2xl font-bold text-gray-800">AI-Powered Research</h3>
-                    <p class="mt-2 text-base text-gray-600 text-center">Upload documents and get instant summaries, key facts, and answers in minutes.</p>
-                </div>
-            </div>
-            <div class="absolute bottom-5 right-8 text-sm text-gray-500">September 5, 2025</div>
-        </div>
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
 
-        <!-- Slide 8: Creative AI -->
-        <div id="slide8" class="slide-container justify-start">
-            <div class="w-full">
-                <h1 class="section-title text-3xl sm:text-4xl font-bold mb-4">Creative AI: Images & Video</h1>
-                <div class="flex space-x-2 mb-8">
-                    <div class="w-24 h-1 blue-bar"></div>
-                    <div class="w-24 h-1 red-bar"></div>
-                    <div class="w-24 h-1 yellow-bar"></div>
-                    <div class="w-24 h-1 green-bar"></div>
-                </div>
-            </div>
-            <div class="content-grid">
-                <div class="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-xl transform transition-all duration-300">
-                    <div class="icon-box bg-blue-100 text-blue-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-image text-4xl"></i></div>
-                    <h3 class="mt-4 text-xl sm:text-2xl font-bold text-gray-800">Generate Stunning Visuals</h3>
-                    <p class="mt-2 text-base text-gray-600 text-center">Create photorealistic images for virtual staging and lifestyle shots with simple prompts.</p>
-                </div>
-                <div class="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-xl transform transition-all duration-300">
-                    <div class="icon-box bg-red-100 text-red-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-video text-4xl"></i></div>
-                    <h3 class="mt-4 text-xl sm:text-2xl font-bold text-gray-800">Dynamic Video Tours</h3>
-                    <p class="mt-2 text-base text-gray-600 text-center">Use powerful AI models to generate cinematic video clips for social media and virtual tours.</p>
-                </div>
-            </div>
-            <div class="absolute bottom-5 right-8 text-sm text-gray-500">September 5, 2025</div>
-        </div>
+            const showPromptGuideBtn = document.getElementById('show-prompt-guide');
+            const promptGuideSection = document.getElementById('prompt-guide');
 
-        <!-- Slide 9: Nano Banana -->
-        <div id="slide9" class="slide-container justify-start">
-            <div class="w-full">
-                <h1 class="section-title text-3xl sm:text-4xl font-bold mb-4">Go Bananas with Nano Banana! 🍌🍌🍌</h1>
-                <div class="flex space-x-2 mb-8">
-                    <div class="w-24 h-1 blue-bar"></div>
-                    <div class="w-24 h-1 red-bar"></div>
-                    <div class="w-24 h-1 yellow-bar"></div>
-                    <div class="w-24 h-1 green-bar"></div>
-                </div>
-            </div>
-            <div class="content-grid">
-                <div class="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-xl transform transition-all duration-300">
-                    <div class="icon-box bg-blue-100 text-blue-600 w-24 h-24 sm:w-28 sm:h-28"><i class="fas fa-mobile-alt text-4xl"></i></div>
-                    <h3 class="mt-4 text-xl sm:text-2xl font-bold text-gray-800">Live Virtual Staging on Your Phone</h3>
-                    <p class="mt-2 text-base text-gray-600 text-center">Experience live, on-the-go photo editing with the Gemini app, giving clients an instant vision of a space's potential.</p>
-                </div>
-            </div>
-            <div class="absolute bottom-5 right-8 text-sm text-gray-500">September 5, 2025</div>
-        </div>
-        
-        <!-- Slide 10: Conclusion -->
-        <div id="slide10" class="slide-container justify-center text-center">
-            <div class="space-y-8">
-                <div class="flex justify-center space-x-2">
-                    <div class="w-40 h-1.5 blue-bar"></div>
-                    <div class="w-40 h-1.5 red-bar"></div>
-                    <div class="w-40 h-1.5 yellow-bar"></div>
-                    <div class="w-40 h-1.5 green-bar"></div>
-                </div>
-                <h1 class="title text-4xl sm:text-5xl lg:text-6xl">Ready to transform your workflow?</h1>
-                <p class="subtitle text-base sm:text-lg lg:text-xl max-w-3xl mx-auto">This presentation is just a taste. Join us for the full live event to see these tools in action, get your questions answered by experts, and craft your own AI roadmap. Please bring your laptop for the interactive part of the session.</p>
-            </div>
-            <div class="absolute bottom-5 right-8 text-sm text-gray-500">September 5, 2025</div>
-        </div>
-
-    </div>
+            showPromptGuideBtn.addEventListener('click', () => {
+                const isExpanded = promptGuideSection.classList.toggle('is-expanded');
+                if (isExpanded) {
+                    promptGuideSection.style.maxHeight = promptGuideSection.scrollHeight + 'px';
+                } else {
+                    promptGuideSection.style.maxHeight = '0';
+                }
+                promptGuideSection.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
 </body>
 </html>
